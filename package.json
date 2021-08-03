@@ -1,7 +1,7 @@
 {
-  "name": "js13kserver",
+  "name": "js13ks-lobby",
   "version": "1.0.2",
-  "description": "js13kgames game jam server",
+  "description": "js13kgames game jam server lobby",
   "license": "MIT",
   "main": "index.js",
   "scripts": {
