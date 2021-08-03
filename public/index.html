@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Rock, Paper, Scissors</title>
+<title>Sample js13k Lobby</title>
 <meta charset="UTF-8">
 </head>
 <body>
 
-<div style="text-align:center">
+<div style="text-align: center">
     <h1 id="message"></h1>
     <div>
-        <button>Rock</button>
-        <button>Paper</button>
-        <button>Scissors</button>
+      <label>Nick
+      <input type="text" id="nick"></label>
+      <label>Level
+      <input type="text" id="lev" value="I'm a newbie"></label>
+      <button id="enter">Enter Lobby</button>
     </div>
-    <div id="score"></div>
-    <p>
-        <a href="/stat">Statistics</a>
-    </p>
+    <div id="board"></div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
