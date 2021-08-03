@@ -13,7 +13,7 @@ const shared = fs.existsSync('./public/shared.js') ? fs.readFileSync('./public/s
 const storage = require('./lib/storage');
 const limit = 13 * 1024;
 const chalk = require('chalk');
-const runMode = /*process.env.NODE_ENV ||*/ 'development'
+const runMode = process.env.NODE_ENV || 'development'
 const isDevelopment = !!(runMode === 'development')
 const isProduction = !!(runMode === 'production')
 const isTest = !!(runMode === 'test')
