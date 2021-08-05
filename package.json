@@ -9,7 +9,7 @@
     "start:dev": "nodemon --watch public index.js",
     "test": "mocha test",
     "watch": "nodemon --watch src --exec npm run build-dev ",
-    "build-dev": "uglifyjs src/client/*.js -b -o public/client.js & uglifyjs src/server/server.js -b -o public/server.js & html-minifier --input-dir src/client --output-dir public --file-ext html",
+    "build-dev": "uglifyjs src/client/*.js -b -o public/client.js & uglifyjs src/server/server.js -b -o public/server.js & css-minify -d src/client -o public  & html-minifier --input-dir src/client --output-dir public --file-ext html",
     "build-rel": "uglifyjs src/client/*.js -c -m  -o public/client.js & uglifyjs src/server/server.js -c -m  -o public/server.js & css-minify -d src/client -o public  & html-minifier --input-dir src/client --output-dir public --file-ext html --remove-comments --collapse-whitespace --remove-optional-tags --remove-redundant-attributes --remove-script-type-attributes --remove-style-link-type-attributes --sort-class-name"
   },
   "keywords": [

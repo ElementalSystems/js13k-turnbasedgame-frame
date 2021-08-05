@@ -1,1 +1,60 @@
-console.log("game included"),function(){let t,n,o,l,e;function d(e){n.innerHTML=e}window.addEventListener("load",function(){t=io({upgrade:!1,transports:["websocket"]}),n=document.getElementById("message"),o=document.getElementById("board"),l=document.getElementById("nick"),e=document.getElementById("lev"),t.on("connect",()=>{d("Connected")}),t.on("lobby",e=>{d("Got lobby data!"),console.log(e),o.innerHTML="",e.available.forEach(e=>{let n=document.createElement("div");n.textContent="Play with "+e.nick+" ("+e.level+")",e.nick==l.value&&(n.disabled=!0),n.addEventListener("click",()=>{t.emit("play",{opponent:e.id})}),o.appendChild(n)})}),t.on("disconnect",()=>{d("Connection lost!")}),t.on("playstart",e=>{d("game started; lead:"+e.lead),e.lead&&t.emit("gamemsg",{display:"I'm in charge"})}),t.on("gamemsg",e=>{d("game:"+e.display)}),t.on("error",()=>{d("Connection error!")}),document.getElementById("enter").addEventListener("click",()=>{t.emit("enter",{nick:l.value,level:e.value})})},!1)}();
+console.log("game included");
+
+(function() {
+    let socket, top, bot, board, nick, level;
+    function bind() {
+        socket.on("connect", () => {});
+        socket.on("lobby", data => {
+            board.innerHTML = "";
+            data.available.forEach(u => {
+                let b = document.createElement("div");
+                b.textContent = "Play with " + u.nick + " (" + u.level + ")";
+                if (u.nick == nick.value) b.classList.toggle("no", true);
+                b.addEventListener("click", () => {
+                    socket.emit("play", {
+                        opponent: u.id
+                    });
+                });
+                board.appendChild(b);
+            });
+        });
+        socket.on("disconnect", () => {});
+        socket.on("playstart", d => {
+            if (d.lead) socket.emit("gamemsg", {
+                display: "I'm in charge"
+            });
+        });
+        socket.on("gamemsg", d => {});
+        socket.on("error", () => {});
+        document.getElementById("enter").addEventListener("click", () => {
+            socket.emit("enter", {
+                nick: nick.value,
+                level: level.value
+            });
+            bot.classList.toggle("no", false);
+            top.classList.toggle("no", true);
+        });
+        document.getElementById("leave").addEventListener("click", () => {
+            socket.emit("leave", {
+                nick: nick.value,
+                level: level.value
+            });
+            top.classList.toggle("no", false);
+            bot.classList.toggle("no", true);
+        });
+    }
+    function init() {
+        socket = io({
+            upgrade: false,
+            transports: [ "websocket" ]
+        });
+        top = document.getElementById("top");
+        bot = document.getElementById("bot");
+        board = document.getElementById("board");
+        nick = document.getElementById("nick");
+        level = document.getElementById("lev");
+        nick.value = "user" + +new Date() % 1e4;
+        bind();
+    }
+    window.addEventListener("load", init, false);
+})();
