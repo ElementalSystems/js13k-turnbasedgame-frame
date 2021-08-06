@@ -28,6 +28,8 @@ If you are developing you can watch the src directory (and automatically rebuild
 ## What it does
 It allows players on the cloud to enter a nickname and level of ability and enter
  a lobby area which displays other players waiting to play.
-You can select a player to play with and launch a (trivial) game.
+You can select a player to play with and launch a (trivial) game. you can log in
+with two different browser tabs to see it work.
 
-The system is intended for a two player turn based game.
+The system is intended for a two player turn based game. You can see it running
+at https://js13ks-lobby.herokuapp.com/
