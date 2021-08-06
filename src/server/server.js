@@ -65,7 +65,7 @@ module.exports = {
 			pubUsers();
 		});
 
-		socket.on("play", (d) => {
+		socket.on("reqstart", (d) => {
        let lead=users.find(u=>u.id==d.opponent);
 			 if (lead&&(lead.status==1)) { //we match
 				 lead.status=2;
@@ -84,8 +84,14 @@ module.exports = {
 			 }
 		});
 
-		socket.on("playend", (d) => {
-    	 user.match=null;
+		socket.on("reqend", (d) => {
+       if (user.match) {
+         user.match.emit("playend",d);
+    	   user.match.match=null;
+         user.match.status=1;
+       }
+       user.emit("playend",d);
+       user.match=null;
 			 user.status=1;
 			 pubUsers();
 		});

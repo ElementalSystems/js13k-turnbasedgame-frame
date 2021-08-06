@@ -9,7 +9,7 @@
 
 <body>
 
-  <div class="lobby">
+  <div id="lobby">
     <div id="top">
       <label>Nick
         <input type="text" id="nick"></label>
@@ -24,6 +24,12 @@
       <button id="leave">Leave Lobby</button>
     </div>
 
+  </div>
+  <div id="game" class="gone">
+      <h3>Game Initiated</h3>
+      <div id="gamestatus"></div>
+      <button id="next">Play Turn</button>
+      <button id="end">End Game</button>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>

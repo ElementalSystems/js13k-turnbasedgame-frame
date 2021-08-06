@@ -1,17 +1,56 @@
-console.log("game included");
+let isLead = 0;
+
+let gameState = {
+    turn: 1,
+    id: "lobby-test"
+};
+
+function startGame(lead, gamemsg, gameend) {
+    let gb = document.getElementById("game");
+    gb.classList.toggle("gone", false);
+    isLead = lead ? 1 : 0;
+    document.getElementById("next").onclick = () => {
+        gameState.turn += 1;
+        gamemsg(gameState);
+        updateBoard();
+    };
+    document.getElementById("end").addEventListener("click", () => {
+        gameend();
+    });
+    if (lead) {
+        gameState.turn = 1;
+        gameState.initTime = +new Date();
+        gamemsg(gameState);
+        updateBoard();
+    }
+}
+
+function msgGame(data) {
+    gameState = data;
+    updateBoard();
+}
+
+function endGame() {
+    gb = document.getElementById("game").classList.toggle("gone", true);
+}
+
+function updateBoard() {
+    document.getElementById("gamestatus").textContent = JSON.stringify(gameState);
+    document.getElementById("next").disabled = !((gameState.turn + isLead) % 2);
+}
 
 (function() {
-    let socket, top, bot, board, nick, level;
+    let socket, lobby, top, bot, board, nick, level;
     function bind() {
         socket.on("connect", () => {});
         socket.on("lobby", data => {
             board.innerHTML = "";
             data.available.forEach(u => {
                 let b = document.createElement("div");
-                b.textContent = "Play with " + u.nick + " (" + u.level + ")";
+                b.textContent = "Start Game with :" + u.nick + " - [" + u.level + "]";
                 if (u.nick == nick.value) b.classList.toggle("no", true);
                 b.addEventListener("click", () => {
-                    socket.emit("play", {
+                    socket.emit("reqstart", {
                         opponent: u.id
                     });
                 });
@@ -20,11 +59,20 @@ console.log("game included");
         });
         socket.on("disconnect", () => {});
         socket.on("playstart", d => {
-            if (d.lead) socket.emit("gamemsg", {
-                display: "I'm in charge"
+            lobby.classList.toggle("gone", true);
+            startGame(d.lead, msg => {
+                socket.emit("gamemsg", msg);
+            }, msg => {
+                socket.emit("reqend");
             });
         });
-        socket.on("gamemsg", d => {});
+        socket.on("playend", () => {
+            lobby.classList.toggle("gone", false);
+            endGame();
+        });
+        socket.on("gamemsg", msg => {
+            msgGame(msg);
+        });
         socket.on("error", () => {});
         document.getElementById("enter").addEventListener("click", () => {
             socket.emit("enter", {
@@ -48,6 +96,7 @@ console.log("game included");
             upgrade: false,
             transports: [ "websocket" ]
         });
+        lobby = document.getElementById("lobby");
         top = document.getElementById("top");
         bot = document.getElementById("bot");
         board = document.getElementById("board");

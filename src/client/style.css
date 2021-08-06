@@ -1,4 +1,4 @@
-div.lobby {
+div#lobby {
   text-align: center;
 }
 
@@ -26,4 +26,8 @@ div#board div {
 div.no {
   opacity: .2;
   pointer-events: none;
+}
+
+div.gone {
+  display: none;
 }

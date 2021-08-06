@@ -1,5 +1,6 @@
 (function () {
     let socket,
+        lobby,
         top,
         bot,
         board,
@@ -13,10 +14,10 @@
           board.innerHTML='';
           data.available.forEach((u)=>{
             let b = document.createElement('div');
-            b.textContent = 'Play with '+u.nick+' ('+u.level+')';
+            b.textContent = 'Start Game with :'+u.nick+' - ['+u.level+']';
             if (u.nick==nick.value) b.classList.toggle('no',true);
             b.addEventListener('click',()=>{
-              socket.emit("play", {opponent: u.id })
+              socket.emit("reqstart", {opponent: u.id })
             });
             board.appendChild(b);
           })
@@ -27,11 +28,20 @@
         });
 
         socket.on("playstart", (d) => {
-          if (d.lead)
-             socket.emit("gamemsg",{display:"I'm in charge"})
+          lobby.classList.toggle('gone',true);
+          startGame(d.lead,
+                   (msg)=>{ socket.emit("gamemsg",msg); },
+                   (msg)=>{ socket.emit("reqend"); }
+                 );
         });
 
-        socket.on("gamemsg", (d) => {
+        socket.on("playend", () => {
+          lobby.classList.toggle('gone',false);
+          endGame();
+        });
+
+        socket.on("gamemsg", (msg) => {
+          msgGame(msg);
         });
 
         socket.on("error", () => {
@@ -52,6 +62,7 @@
 
     function init() {
         socket = io({ upgrade: false, transports: ["websocket"] });
+        lobby =  document.getElementById("lobby");
         top = document.getElementById("top");
         bot = document.getElementById("bot");
         board = document.getElementById("board");
