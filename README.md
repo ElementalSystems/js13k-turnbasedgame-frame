@@ -17,9 +17,11 @@ You can run the server locally with the following command:
 You can reach the test server at [http://localhost:3000](http://localhost:3000)
 
 To build a minimal version use:
+
     npm run build-rel
 
 If you are developing you can watch the src directory (and automatically rebuild without compression) with
+
     npm run watch
 
 
