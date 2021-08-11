@@ -19,7 +19,7 @@ function startGame(lead,gamemsg,gameend)
   };
   document.getElementById("end").onclick=()=>{
     gameend();
-  });
+  };
 
   if (lead) {
     //init game
