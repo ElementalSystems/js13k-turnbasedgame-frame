@@ -51,7 +51,7 @@ module.exports = {
 			pubUsers();
     });
 
-    socket.on("enter", (ui) => {
+    socket.on("el", (ui) => { //enter lobby request
 			removeUser(user)
       user.nick = ui.nick;
       user.level = ui.level;
@@ -60,7 +60,7 @@ module.exports = {
       pubUsers();
     });
 
-		socket.on("leave", (ui) => {
+		socket.on("ll", (ui) => { //leave lobby request
 			removeUser(user)
 			pubUsers();
 		});

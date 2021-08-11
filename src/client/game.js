@@ -12,14 +12,14 @@ function startGame(lead,gamemsg,gameend)
   isLead=lead?1:0;
 
 
-  document.getElementById("next").onclick=()=>{
+  geclk("next",()=>{
     gameState.turn+=1;
     gamemsg(gameState);
     updateBoard();
-  };
-  document.getElementById("end").onclick=()=>{
+  });
+  geclk("end",()=>{
     gameend();
-  };
+  });
 
   if (lead) {
     //init game

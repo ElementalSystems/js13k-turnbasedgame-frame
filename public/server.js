@@ -39,7 +39,7 @@ module.exports = {
             removeUser(user);
             pubUsers();
         });
-        socket.on("enter", ui => {
+        socket.on("el", ui => {
             removeUser(user);
             user.nick = ui.nick;
             user.level = ui.level;
@@ -47,7 +47,7 @@ module.exports = {
             users.push(user);
             pubUsers();
         });
-        socket.on("leave", ui => {
+        socket.on("ll", ui => {
             removeUser(user);
             pubUsers();
         });

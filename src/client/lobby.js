@@ -13,15 +13,14 @@ function _init_lobby() {
   socket.on("lobby", (data) => {
     board.innerHTML = '';
     data.available.forEach((u) => {
-      let b = document.createElement('div');
-      b.textContent = 'Start Game with :' + u.nick + ' - [' + u.level + ']';
-      if (u.nick == ge('nick').value) b.classList.toggle('no', true);
-      b.addEventListener('click', () => {
+      if (u.nick == ge('nick').value) return;
+      let b = clone('board','brde');
+      b.textContent = 'Start Game with: ' + u.nick + ' - [' + u.level + ']';
+      b.onclick = () => {
         socket.emit("reqstart", {
           opponent: u.id
         })
-      });
-      board.appendChild(b);
+      };
     })
   });
 
@@ -51,18 +50,17 @@ function _init_lobby() {
 
   socket.on("error", () => {});
 
-  document.getElementById("enter").addEventListener('click', () => {
-    socket.emit("enter", {
+  geclk("enter", () => {
+    socket.emit("el", {
       nick: ge('nick').value,
       level: ge('lev').value
     })
     ge_no('top',true);
     ge_no('bot',false);
-
   });
 
-  document.getElementById("leave").addEventListener('click', () => {
-    socket.emit("leave", {
+  geclk("leave", () => {
+    socket.emit("ll", {
     })
     ge_no('top',false);
     ge_no('bot',true);
