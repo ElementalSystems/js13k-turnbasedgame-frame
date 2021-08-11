@@ -13,7 +13,7 @@ div#lobby {
   margin-bottom: .5rem;
 }
 
-div#board div {
+.brde {
   max-width: 50rem;
   background: #FF0;
   border: solid 2px #000;
@@ -23,11 +23,11 @@ div#board div {
   border-radius: .5rem;
 }
 
-div.no {
+.no {
   opacity: .2;
   pointer-events: none;
 }
 
-div.gone {
+.gone {
   display: none;
 }
