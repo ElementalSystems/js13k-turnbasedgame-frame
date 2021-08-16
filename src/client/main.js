@@ -1,3 +1,3 @@
 function init() {
-  start_lobby();
+  startGame();
 }
