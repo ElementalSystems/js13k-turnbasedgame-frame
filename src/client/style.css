@@ -40,9 +40,14 @@ div#lobby {
 .tile {
 
   background: #380;
-  border: #8F0 1px solid;
+  border: #000 1px solid;
   position:absolute;
+  pointer-events: none;
+}
 
+.tile.ht {
+  border: #0FF 1px solid;
+  pointer-events: all;
 }
 
 .tile:hover {
@@ -75,6 +80,9 @@ circle {
 .tile.l3 line.l3 {display: block;}
 .tile.l4 circle.l4 {display: block;}
 
+.tile.ht line { opacity: .3;  }
+.tile.ht:hover line { opacity: .8;  }
+
 .tile.p1 line {--linecol: #800;}
 .tile.p2 line {--linecol: #008;}
 
@@ -99,7 +107,7 @@ circle {
   transition: transform 1s,transform-origin 1s;
 }
 
-#gamebrd.p2 {
+#gamebrd.p1 {
   transform-origin: right;
   transform: rotateY(-20deg);
 }
