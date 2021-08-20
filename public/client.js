@@ -21,6 +21,9 @@ function updateBoard() {}
 function startGame() {
     let grid_c = null;
     let _gs = 9;
+    ge_gone("game", false);
+    let gs = m_gs(_gs, [ 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ]);
+    let gsh = h_gs(gs);
     let setTile = (t, b, c, ht) => {
         for (i = 0; i < 5; i += 1) t.classList.toggle("l" + i, b & 1 << i);
         t.classList.toggle("p1", c == 0);
@@ -28,34 +31,16 @@ function startGame() {
         t.classList.toggle("ht", !!ht);
     };
     let posTile = (t, i) => {
-        let x = i % _gs, y = Math.floor(i / _gs);
-        if (y == _gs) x = -1.5;
-        if (y == _gs + 1) x = _gs + .5;
-        if (y >= _gs) y = i % _gs * 1.2 + .3;
-        t.style.left = x * 100 / _gs + "%";
-        t.style.top = y * 100 / _gs + "%";
-        t.style.width = t.style.height = 100 / _gs + "%";
+        let x = i % gs.s, y = Math.floor(i / gs.s);
+        if (y == gs.s) x = -1.5;
+        if (y == gs.s + 1) x = gs.s + .5;
+        if (y >= gs.s) y = i % gs.s * 1.2 + .3;
+        t.style.left = x * 100 / gs.s + "%";
+        t.style.top = y * 100 / gs.s + "%";
+        t.style.width = t.style.height = 100 / gs.s + "%";
         return t;
     };
-    ge_gone("game", false);
-    let bs = [ 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ].sort(() => Math.random() - .5);
-    let gs = {
-        tn: 0,
-        tls: new Array(_gs * _gs).fill(0),
-        own: new Array(_gs * _gs).fill(-1),
-        ft: [ bs, bs.map(n => {
-            x = (n >> 1 ^ n >> 3) & 1;
-            return n ^ (x << 1 | x << 3);
-        }) ]
-    };
-    let gs_add = (i, t, o) => {
-        gs.tls[i] = t;
-        gs.own[i] = o;
-    };
-    gs_add(40, 31, -1);
-    gs_add(27, 23, 0);
-    gs_add(53 - 18, 29, 1);
-    let gg = new Array(_gs * (_gs + 2)).fill(0).map((d, i) => {
+    let gg = new Array(gs.s * (gs.s + 2)).fill(0).map((d, i) => {
         let t = clone("gamebrd", "tile");
         posTile(t, i);
         t.onclick = () => {
@@ -65,19 +50,78 @@ function startGame() {
     });
     let updateBoard = () => {
         gg.forEach((t, i) => {
-            if (i < _gs * _gs) setTile(t, gs.tls[i], gs.own[i]); else if (i - _gs < _gs * _gs) {
-                setTile(t, gs.ft[0][i - _gs * _gs], -1);
+            if (i < gs.s * gs.s) setTile(t, gs.tls[i], gs.own[i]); else if (i - gs.s < gs.s * gs.s) {
+                setTile(t, gs.ft[0][i - gs.s * gs.s], -1);
             } else {
-                setTile(t, gs.ft[1][i - _gs * _gs - _gs], -1);
+                setTile(t, gs.ft[1][i - gs.s * gs.s - gs.s], -1);
             }
         });
     };
+    let doTurn = () => {
+        updateBoard();
+        let pn = gs.tn % 2;
+        let ntl = gs.ft[pn][0];
+        gecl("gamebrd", "p1", pn);
+        gs.tls.forEach((t, i) => {
+            if (gsh.canPlay(i, ntl, pn)) setTile(gg[i], ntl, -1, true);
+        });
+        grid_c = i => {
+            gsh.add(i, ntl, -1);
+            gs.tn += 1;
+            gs.ft[pn].shift();
+            doTurn();
+        };
+    };
+    doTurn();
+}
+
+function m_gs(s, bs) {
+    let flip = n => {
+        x = (n >> 1 ^ n >> 3) & 1;
+        y = (n >> 0 ^ n >> 2) & 1;
+        return n ^ (x << 1 | x << 3) ^ (y << 0 | y << 2);
+    };
+    let ts = bs.sort(() => Math.random() - .5);
+    let gs = {
+        tn: 0,
+        s: s,
+        tls: new Array(s * s).fill(0),
+        own: new Array(s * s).fill(-1),
+        ft: [ ts, ts.map(n => flip(n)) ]
+    };
+    let h = h_gs(gs);
+    h.add(40, 31, -1);
+    h.add(27, 23, 0);
+    h.add(53 - 18, 29, 1);
+    return gs;
+}
+
+function h_gs(gs) {
+    let checkOwn = i => {
+        if (gs.own[i] >= 0) return;
+        cq = [];
+        let cs = j => {
+            if (gs.tls[j] == 0) return;
+            if (gs.own[j] >= 0) gs.own[i] = gs.own[j]; else cq.push(j);
+        };
+        let t = gs.tls[i];
+        if (t & 1) cs(i - gs.s);
+        if (t & 2) cs(i + 1);
+        if (t & 4) cs(i + gs.s);
+        if (t & 8) cs(i - 1);
+        if (gs.own[i] >= 0) cq.forEach(d => checkOwn(d));
+    };
+    let add = (i, t, o) => {
+        gs.tls[i] = t;
+        gs.own[i] = o;
+        checkOwn(i);
+    };
     let checkTile = (i, xo, yo, path, bit, own) => {
-        let xp = i % _gs + xo, yp = Math.floor(i / _gs) + yo;
-        if (xp < 0 || xp >= _gs || yp < 0 || yp >= _gs) return path ? -10 : 0;
-        let t = gs.tls[i + xo + yo * _gs];
+        let xp = i % gs.s + xo, yp = Math.floor(i / gs.s) + yo;
+        if (xp < 0 || xp >= gs.s || yp < 0 || yp >= gs.s) return path ? -10 : 0;
+        let t = gs.tls[i + xo + yo * gs.s];
         if (!t) return 0;
-        let o = gs.own[i + xo + yo * _gs];
+        let o = gs.own[i + xo + yo * gs.s];
         if (path && o != own && o >= 0) return -10;
         let isP = t & bit;
         return !!isP == !!path ? 1 : -10;
@@ -86,23 +130,11 @@ function startGame() {
         if (gs.tls[i] != 0) return false;
         return checkTile(i, 0, -1, t & 1, 4, o) + checkTile(i, 0, 1, t & 4, 1, o) + checkTile(i, 1, 0, t & 2, 8, o) + checkTile(i, -1, 0, t & 8, 2, o) > 0;
     };
-    let doTurn = () => {
-        updateBoard();
-        let pn = gs.tn % 2;
-        let ntl = gs.ft[pn][0];
-        gecl("gamebrd", "p1", pn);
-        gs.tls.forEach((t, i) => {
-            if (canPlay(i, ntl, pn)) setTile(gg[i], ntl, -1, true);
-        });
-        grid_c = i => {
-            gs.tls[i] = ntl;
-            gs.own[i] = -1;
-            gs.tn += 1;
-            gs.ft[pn].shift();
-            doTurn();
-        };
+    return {
+        add: add,
+        canPlay: canPlay,
+        checkOwn: checkOwn
     };
-    doTurn();
 }
 
 function _init_lobby() {
