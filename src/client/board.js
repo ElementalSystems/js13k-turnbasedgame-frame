@@ -1,4 +1,6 @@
-function brd(gs) {
+function mk_brd(gs) {
+  let grid_c = null;
+
   let setTile = (t, b, c, ht) => {
     for (i = 0; i < 5; i += 1)
       t.classList.toggle('l' + i,b & (1 << i));
@@ -19,8 +21,36 @@ function brd(gs) {
     return t;
   }
 
+  let update = () => { //set up grid
+    gecl('gamebrd', 'p1', gs.tn%2);
+
+    gg.forEach((t, i) => {
+      if (i < gs.s * gs.s)
+        setTile(t, gs.tls[i], gs.own[i]); //main rack
+      else if (i - gs.s < gs.s * gs.s) {
+        setTile(t, gs.ft[0][i - gs.s * gs.s], -1); //p1 side
+      } else {
+        setTile(t, gs.ft[1][i - gs.s * gs.s - gs.s], -1); //p2 side
+      }
+    });
+  }
+
+
+  //make the game grid
+  let gg = new Array(gs.s * (gs.s + 2)).fill(0).map((d, i) => {
+    let t = clone('gamebrd', 'tile')
+    posTile(t, i);
+    t.onclick = () => {
+      if (grid_c) grid_c(i);
+    }
+    return t;
+  });
+
+
+
   return {
-    posTile,
-    setTile,
+    setT:(i,t,o,ht)=>setTile(gg[i],t,o,ht),
+    setClk: (f)=>{grid_c=f},
+    update,
   }
 }
