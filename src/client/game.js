@@ -30,7 +30,8 @@ function startGame() {
   ge_gone('game', false);
 
   //make the game state
-  let gs = m_gs(_gs,[11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5])
+  //let gs = m_gs(9,true,[23,21,26],[3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5])
+  let gs = m_gs(7,true,[19],[3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5])
   let gsh=h_gs(gs)
 
   let setTile = (t, b, c, ht) => {

@@ -1,10 +1,10 @@
-function m_gs(s, bs) {
+function m_gs(s,cen,ex,bs) {
   let flip=(n)=>{ //utility to mirror a tile code
     x = ((n >> 1) ^ (n >> 3)) & 1;
     y = ((n >> 0) ^ (n >> 2)) & 1;
     return n ^ ((x << 1) | (x << 3))^ ((y << 0) | (y << 2));
   }
-  let ts = bs.sort(() => (Math.random() - .5))
+  let ts = new Array(5).fill(bs).flat().sort(() => (Math.random() - .5))
   let gs = {
     tn: 0, //turn number
     s: s,
@@ -13,10 +13,25 @@ function m_gs(s, bs) {
     ft: [ts, ts.map(n => flip(n))], //upcoming list of tiles for two players invert one player list
   }
 
+
   let h=h_gs(gs);
-  h.add(40,31,-1);
-  h.add(27,23,0);
-  h.add(53-18,29,1);
+
+  let add_r=(t,start)=>{ //tool to add a random symetric site of tiles
+    let i;
+    do {
+      //choose a random tile
+      i=Math.floor(Math.random()*gs.s*gs.s);
+      if (start) i=Math.floor(i/gs.s)*gs.s; //if start force it to the left most column
+    } while (!h.canPlace(i,t,start?0:-1)) //check if it's legal if not restart
+    h.add(i,t,start?0:-1); //add the tile
+    h.add(gs.s*gs.s-1-i,flip(t),start?1:-1); //okay generate the mathcing fliped tile in the sq - position
+  }
+
+
+  if (cen) h.add(Math.floor((gs.s*gs.s)/2),31,-1);
+  add_r(23,true);
+  ex.forEach(t => add_r(t));
+
   return gs;
 }
 
@@ -59,15 +74,22 @@ function h_gs(gs) {
       return ((!!isP) == (!!path)) ? 1 : -10;
     }
 
-  let canPlay = (i, t, o) => {
-    if (gs.tls[i] != 0) return false; //already something there
-    //check if I can play
-    return (checkTile(i, 0, -1, t & 1, 4, o) + checkTile(i, 0, 1, t & 4, 1, o) + checkTile(i, 1, 0, t & 2, 8, o) + checkTile(i, -1, 0, t & 8, 2, o)) > 0;
-  }
+    let canPlay = (i, t, o) => {
+      if (gs.tls[i] != 0) return false; //already something there
+      //check if I can play
+      return (checkTile(i, 0, -1, t & 1, 4, o) + checkTile(i, 0, 1, t & 4, 1, o) + checkTile(i, 1, 0, t & 2, 8, o) + checkTile(i, -1, 0, t & 8, 2, o)) >= 0;
+    }
+    let canPlace = (i, t, o) => {
+      if (gs.tls[i] != 0) return false; //already something there
+      //check if I can place here
+      return (checkTile(i, 0, -1, t & 1, 4, o) + checkTile(i, 0, 1, t & 4, 1, o) + checkTile(i, 1, 0, t & 2, 8, o) + checkTile(i, -1, 0, t & 8, 2, o)) >= 0;
+    }
 
   return {
     add,
     canPlay,
+    canPlace,
     checkOwn,
+    gs,
   }
 }

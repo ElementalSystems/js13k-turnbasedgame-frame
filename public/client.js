@@ -1,3 +1,26 @@
+function brd(gs) {
+    let setTile = (t, b, c, ht) => {
+        for (i = 0; i < 5; i += 1) t.classList.toggle("l" + i, b & 1 << i);
+        t.classList.toggle("p1", c == 0);
+        t.classList.toggle("p2", c == 1);
+        t.classList.toggle("ht", !!ht);
+    };
+    let posTile = (t, i) => {
+        let x = i % gs.s, y = Math.floor(i / gs.s);
+        if (y == gs.s) x = -1.5;
+        if (y == gs.s + 1) x = gs.s + .5;
+        if (y >= gs.s) y = i % gs.s * 1.2 + .3;
+        t.style.left = x * 100 / gs.s + "%";
+        t.style.top = y * 100 / gs.s + "%";
+        t.style.width = t.style.height = 100 / gs.s + "%";
+        return t;
+    };
+    return {
+        posTile: posTile,
+        setTile: setTile
+    };
+}
+
 let isLead = 0;
 
 function startGameMulti(lead, gamemsg, gameend) {
@@ -22,7 +45,7 @@ function startGame() {
     let grid_c = null;
     let _gs = 9;
     ge_gone("game", false);
-    let gs = m_gs(_gs, [ 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ]);
+    let gs = m_gs(7, true, [ 19 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ]);
     let gsh = h_gs(gs);
     let setTile = (t, b, c, ht) => {
         for (i = 0; i < 5; i += 1) t.classList.toggle("l" + i, b & 1 << i);
@@ -75,13 +98,13 @@ function startGame() {
     doTurn();
 }
 
-function m_gs(s, bs) {
+function m_gs(s, cen, ex, bs) {
     let flip = n => {
         x = (n >> 1 ^ n >> 3) & 1;
         y = (n >> 0 ^ n >> 2) & 1;
         return n ^ (x << 1 | x << 3) ^ (y << 0 | y << 2);
     };
-    let ts = bs.sort(() => Math.random() - .5);
+    let ts = new Array(5).fill(bs).flat().sort(() => Math.random() - .5);
     let gs = {
         tn: 0,
         s: s,
@@ -90,9 +113,18 @@ function m_gs(s, bs) {
         ft: [ ts, ts.map(n => flip(n)) ]
     };
     let h = h_gs(gs);
-    h.add(40, 31, -1);
-    h.add(27, 23, 0);
-    h.add(53 - 18, 29, 1);
+    let add_r = (t, start) => {
+        let i;
+        do {
+            i = Math.floor(Math.random() * gs.s * gs.s);
+            if (start) i = Math.floor(i / gs.s) * gs.s;
+        } while (!h.canPlace(i, t, start ? 0 : -1));
+        h.add(i, t, start ? 0 : -1);
+        h.add(gs.s * gs.s - 1 - i, flip(t), start ? 1 : -1);
+    };
+    if (cen) h.add(Math.floor(gs.s * gs.s / 2), 31, -1);
+    add_r(23, true);
+    ex.forEach(t => add_r(t));
     return gs;
 }
 
@@ -128,12 +160,18 @@ function h_gs(gs) {
     };
     let canPlay = (i, t, o) => {
         if (gs.tls[i] != 0) return false;
-        return checkTile(i, 0, -1, t & 1, 4, o) + checkTile(i, 0, 1, t & 4, 1, o) + checkTile(i, 1, 0, t & 2, 8, o) + checkTile(i, -1, 0, t & 8, 2, o) > 0;
+        return checkTile(i, 0, -1, t & 1, 4, o) + checkTile(i, 0, 1, t & 4, 1, o) + checkTile(i, 1, 0, t & 2, 8, o) + checkTile(i, -1, 0, t & 8, 2, o) >= 0;
+    };
+    let canPlace = (i, t, o) => {
+        if (gs.tls[i] != 0) return false;
+        return checkTile(i, 0, -1, t & 1, 4, o) + checkTile(i, 0, 1, t & 4, 1, o) + checkTile(i, 1, 0, t & 2, 8, o) + checkTile(i, -1, 0, t & 8, 2, o) >= 0;
     };
     return {
         add: add,
         canPlay: canPlay,
-        checkOwn: checkOwn
+        canPlace: canPlace,
+        checkOwn: checkOwn,
+        gs: gs
     };
 }
 
