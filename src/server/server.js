@@ -72,8 +72,8 @@ module.exports = {
 				 lead.match=user;
 				 user.status=3;
 				 user.match=lead;
-				 lead.emit("playstart",{lead: true});
-				 user.emit("playstart",{lead: false});
+				 lead.emit("playstart",{lead: true, op: user});
+				 user.emit("playstart",{lead: false, op: lead});
 				 pubUsers();
 			 }
 		});

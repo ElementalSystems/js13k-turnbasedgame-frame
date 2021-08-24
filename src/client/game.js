@@ -22,40 +22,47 @@ function endGame() {}
 function updateBoard() {}
 
 
-function startGame() {
-
-  let _gs = 9;
+function startGame(gs) {
 
   ge_gone('game', false);
-
-  //make the game state
-  //let gs = m_gs(9,true,[23,21,26],[3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5])
-  //let gs = m_gs(7,true,[19],[3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5])
-  let gs = m_gs(11,true,[31,23,21,26],[3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5])
   let gsh=h_gs(gs)
-
   let bd=mk_brd(gs);
 
+  bd.setB("Starting Game...",3000);
 
   let doTurn = () => {
     bd.update();
+
+    //maybe someone won
+    if (gs.winner>=0) {
+      bd.setB(gs.p[gs.winner].n+" WON!",5000);
+      return;
+    }
+
+    //okay lets set up the turn
     let pn = gs.tn % 2; //which player
-    let ntl = gs.ft[pn][0]; //the current top tile
+    let ntl = gs.p[pn].ft[0]; //the current top tile
+    bd.setB(gs.p[pn].n+"'s turn");
 
-    //calculate legal moves
-    gs.tls.forEach((t, i) => {
-      if (gsh.canPlay(i, ntl, pn))
-        bd.setT(i, ntl, -1, true);
+
+    selTurn(gsh,bd,pn,gs.p[pn],ntl,(i)=>{
+      pubTurn(gsh, bd, pn, gs.p[pn?0:1], i, ntl)//inform the opponent
+      bd.setClk(null);//kill any click handler on our board
+      bd.update();
+      if (i<0) {
+        bd.setB(gs.p[pn].n+": Forced to Discarded");
+        gs.dCnt=+1;
+      } else {
+        gs.dCnt=0;
+        bd.setB(gs.p[pn].n+": played");
+        bd.setT(i,ntl,-1,true);
+        gsh.add(i,ntl,-1);
+      }
+      gs.tn += 1; 
+      gs.p[pn].ft.shift(); //use up the tile
+      bd.flat();
+      setTimeout(doTurn,1000);
     })
-
-    //now set up for that players turn
-    bd.setClk((i) => {
-      //make the move
-      gsh.add(i,ntl,-1);
-      gs.tn += 1;
-      gs.ft[pn].shift(); //use up the tile
-      doTurn();
-    });
 
   }
 

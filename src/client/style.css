@@ -37,23 +37,48 @@ div#lobby {
   display: none;
 }
 
-.tile {
 
-  background: #380;
-  border: #000 1px solid;
+
+
+.tile {
+  --linecol: #444;
+  background: #C0B0BF;
+  border: #000 2px solid;
   position:absolute;
   pointer-events: none;
 }
 
+@keyframes flash {
+  from {
+    opacity: 1;
+    --linecol: #FFF;
+  }
+  50% {
+    opacity: 0.4;
+  }
+
+  to {
+    --linecol: #888;
+    opacity: 1;
+  }
+}
 .tile.ht {
-  border: #0FF 1px solid;
   pointer-events: all;
-}
-
-.tile:hover {
-  background: #3A0;
+  --linecol: #FFF;
 
 }
+
+.tile.ht line {
+  animation: flash .5s infinite alternate;
+}
+
+
+
+
+.tile.p0 {--linecol: #080;}
+.tile.p1 {--linecol: #804;}
+
+
 
 svg {
   width:100%;
@@ -61,14 +86,12 @@ svg {
 }
 
 line {
-  --linecol: #888;
   stroke:var(--linecol);
   stroke-width:2;
   display:none;
 }
 
 circle {
-  --linecol: #888;
   stroke:var(--linecol);
   stroke-width:2;
   display:none;
@@ -80,21 +103,42 @@ circle {
 .tile.l3 line.l3 {display: block;}
 .tile.l4 circle.l4 {display: block;}
 
-.tile.ht line { opacity: .3;  }
-.tile.ht:hover line { opacity: .8;  }
-
-.tile.p1 line {--linecol: #800;}
-.tile.p2 line {--linecol: #008;}
-
 #game {
   display:flex;
   margin:0;
-  background: #050;
+  background: #000;
 }
 
-#p1, #p2 {
+.ps {
   flex: 1;
-  height: 100vh;
+  height: 98vh;
+  background: var(--pbk);
+  margin: 1vh 1rem;
+  padding:1rem;
+  --pbk: #0F06;
+  --pc: #0F0;
+
+}
+
+.ps h2 {
+  color: #FFF;
+}
+
+.ps h3 {
+  font-size:200%;
+  width: 3em;
+  padding: 1em 0;
+  border-radius: 50% 50%;
+  display: inline-block;
+  text-align: center;
+  background: var(--pc);
+  border: #FFF 4px solid;
+}
+
+#p1 {
+  text-align: right;
+  --pbk: #F086;
+  --pc: #F08;
 }
 
 #gamebrd {
@@ -102,12 +146,29 @@ circle {
   height: 100vh;
   background: #5A5;
   position: relative;
+  transform-origin: bottom;
+  transform: rotatex(40deg);
+  transition: transform 1s,transform-origin 1s;
+}
+
+#gamebrd.p0 {
   transform-origin: left;
   transform: rotateY(20deg);
-  transition: transform 1s,transform-origin 1s;
 }
 
 #gamebrd.p1 {
   transform-origin: right;
   transform: rotateY(-20deg);
+}
+
+#gban { /* game banner */
+  position: absolute;
+  top: 0;
+  margin: 1rem calc(50% - 51vh);
+  padding: 1rem ;
+  font-size:2rem;
+  text-align:center;
+  z-index:1000;
+  width: 98vh;
+  background: #CCC;
 }

@@ -29,6 +29,28 @@ function _init_lobby() {
 
   socket.on("playstart", (d) => {
     ge_gone('lobby',true);
+    let op={
+      n:d.op.nick,
+      t: 'r',
+    }
+    let tp={
+      n: ge('nick').value,
+      t: 'l',
+    }
+
+    if (d.lead) { //if d.lead init your game
+      let gs=m_gs(9,true,[23,21,26],[3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5],tp,op);
+      startGame(gs);
+      lobby.msg(gs);
+    } else {
+      lobby.waitMsg(gs=>{ //we expect to get a game state first
+        gs.p=[op,tp]; //overwrite the players in reverse and play our side
+        startGame(gs)
+      })
+    }
+
+    //otherwise set up a listener and take the first msg as game state
+   /*
     startGame(d.lead,
       (msg) => {
         socket.emit("gamemsg", msg);
@@ -37,6 +59,7 @@ function _init_lobby() {
         socket.emit("reqend");
       }
     );
+    */
   });
 
   socket.on("playend", () => {

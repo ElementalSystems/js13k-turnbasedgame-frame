@@ -8,3 +8,4 @@ let clone=(pid,tempid)=>{
     ge(pid).appendChild(clone);
     return clone;
 }
+let ge_qs=(id,qs)=>ge(id).querySelector(qs);
