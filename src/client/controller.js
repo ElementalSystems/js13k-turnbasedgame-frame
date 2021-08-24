@@ -12,6 +12,7 @@ function selTurn(gsh, bd, pn, p, ntl, mm) {
   }
 
   if (p.t == 'r') { //for a remote player wait for a message
+    console.log("waiting for next turn")
     lobby.waitMsg((m) => mm(m.move)); //wait for remote player to pub that turn.
   }
 
@@ -21,6 +22,6 @@ function pubTurn(gsh, bd, pn, op, i, t) {
   if (op.t == 'r') { //for a remote opponent send a message
     lobby.msg({
       move: i,
-    }); 
+    });
   }
 }

@@ -66,21 +66,23 @@ module.exports = {
 		});
 
 		socket.on("reqstart", (d) => {
+       console.log("got request - matching")
        let lead=users.find(u=>u.id==d.opponent);
 			 if (lead&&(lead.status==1)) { //we match
 				 lead.status=2;
 				 lead.match=user;
 				 user.status=3;
 				 user.match=lead;
-				 lead.emit("playstart",{lead: true, op: user});
-				 user.emit("playstart",{lead: false, op: lead});
+				 lead.emit("playstart",{lead: true, op: user.nick});
+				 user.emit("playstart",{lead: false, op: lead.nick});
 				 pubUsers();
 			 }
 		});
 
-		socket.on("gamemsg", (d) => {
+		socket.on("gm", (d) => {
     	 if (user.match) { //we match
-				 user.match.emit("gamemsg",d);
+         console.log("forwarded gm:"+JSON.stringify(d));
+				 user.match.emit("gm",d);
 			 }
 		});
 

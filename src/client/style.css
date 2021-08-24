@@ -1,5 +1,5 @@
 body {
-  margin:0;
+  margin: 0;
   perspective: 50vw;
 }
 
@@ -22,8 +22,8 @@ div#lobby {
   max-width: 50rem;
   background: #FF0;
   border: solid 2px #000;
-  font-size:2rem;
-  margin:1rem auto;
+  font-size: 2rem;
+  margin: 1rem auto;
   cursor: pointer;
   border-radius: .5rem;
 }
@@ -37,14 +37,11 @@ div#lobby {
   display: none;
 }
 
-
-
-
 .tile {
   --linecol: #444;
   background: #C0B0BF;
   border: #000 2px solid;
-  position:absolute;
+  position: absolute;
   pointer-events: none;
 }
 
@@ -53,6 +50,7 @@ div#lobby {
     opacity: 1;
     --linecol: #FFF;
   }
+
   50% {
     opacity: 0.4;
   }
@@ -62,51 +60,69 @@ div#lobby {
     opacity: 1;
   }
 }
+
 .tile.ht {
   pointer-events: all;
   --linecol: #FFF;
-
 }
 
 .tile.ht line {
   animation: flash .5s infinite alternate;
 }
 
+.tile.p0 {
+  --linecol: #080;
+}
 
-
-
-.tile.p0 {--linecol: #080;}
-.tile.p1 {--linecol: #804;}
-
-
+.tile.p1 {
+  --linecol: #804;
+}
 
 svg {
-  width:100%;
+  width: 100%;
   height: 100%;
 }
 
 line {
-  stroke:var(--linecol);
-  stroke-width:2;
-  display:none;
+  stroke: var(--linecol);
+  stroke-width: 2;
+  display: none;
 }
 
 circle {
-  stroke:var(--linecol);
-  stroke-width:2;
-  display:none;
+  stroke: var(--linecol);
+  stroke-width: 2;
+  display: none;
 }
 
-.tile.l0 line.l0 {display: block;}
-.tile.l1 line.l1 {display: block;}
-.tile.l2 line.l2 {display: block;}
-.tile.l3 line.l3 {display: block;}
-.tile.l4 circle.l4 {display: block;}
+.tile.l0 line.l0 {
+  display: block;
+}
+
+.tile.l1 line.l1 {
+  display: block;
+}
+
+.tile.l2 line.l2 {
+  display: block;
+}
+
+.tile.l3 line.l3 {
+  display: block;
+}
+
+.tile.l4 circle.l4 {
+  display: block;
+}
 
 #game {
-  display:flex;
-  margin:0;
+  display: flex;
+  margin: 0;
   background: #000;
+}
+
+#game.gone {
+  display: none;
 }
 
 .ps {
@@ -114,10 +130,9 @@ circle {
   height: 98vh;
   background: var(--pbk);
   margin: 1vh 1rem;
-  padding:1rem;
+  padding: 1rem;
   --pbk: #0F06;
   --pc: #0F0;
-
 }
 
 .ps h2 {
@@ -125,7 +140,7 @@ circle {
 }
 
 .ps h3 {
-  font-size:200%;
+  font-size: 200%;
   width: 3em;
   padding: 1em 0;
   border-radius: 50% 50%;
@@ -142,13 +157,13 @@ circle {
 }
 
 #gamebrd {
-  width:100vh;
+  width: 100vh;
   height: 100vh;
   background: #5A5;
   position: relative;
   transform-origin: bottom;
   transform: rotatex(40deg);
-  transition: transform 1s,transform-origin 1s;
+  transition: transform 1s, transform-origin 1s;
 }
 
 #gamebrd.p0 {
@@ -161,14 +176,15 @@ circle {
   transform: rotateY(-20deg);
 }
 
-#gban { /* game banner */
+#gban {
+  /* game banner */
   position: absolute;
   top: 0;
   margin: 1rem calc(50% - 51vh);
-  padding: 1rem ;
-  font-size:2rem;
-  text-align:center;
-  z-index:1000;
+  padding: 1rem;
+  font-size: 2rem;
+  text-align: center;
+  z-index: 1000;
   width: 98vh;
   background: #CCC;
 }
