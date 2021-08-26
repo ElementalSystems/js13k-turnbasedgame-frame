@@ -22,19 +22,25 @@ function selTurn(gsh, bd, pn, p, ntl, mm) {
     else {
       let moves=lm.map((i)=>({ //value the legal moves
         m: i,
-        sc: ai_eval_mv(gsh.gs,p,i,ntl),
+        sc: ai_eval_mv(gsh.gs,p,i),
       }))
-      .sort((a,b)=>a.sc-b.sc); //sort our options
-      //wait for a bit
+      .sort((a,b)=>b.sc-a.sc); //sort our options
+      //wait for a bit and then play the bext move
       setTimeout(()=>mm(moves[0].m),1000+Math.random()*1000)
     }
 
   }
 }
 
-function ai_eval_mv(gs,pn,p,i,t)
+function ai_eval_mv(gs,p,i)
 {
-  return Math.random();
+  let pn=gs.tn%2;
+  let opn=pn^1; //opponent player number
+  let h=h_gsc(gs); //we make a virtual board
+  h.move(i);  //and make this move
+  let res=h.gs.p[pn].sc*2-h.gs.p[opn].sc;
+  console.log("move "+i+" val "+res+" --  ");
+  return res+Math.random();
 }
 
 

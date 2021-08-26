@@ -1,9 +1,11 @@
 function mk_brd(gs) {
   let grid_c = null;
 
-  let setTile = (t, b, c, ht) => {
-    for (i = 0; i < 5; i += 1)
-      t.classList.toggle('l' + i,b & (1 << i));
+  let setTile = (t, b, c, ht, g) => {
+    for (i = 0; i < 5; i += 1) {
+      t.classList.toggle('l' + i, b & (1 << i));
+      t.classList.toggle('g' + i, g >= i);
+    }
     t.classList.toggle('p0', c == 0);
     t.classList.toggle('p1', c == 1);
     t.classList.toggle('ht', !!ht);
@@ -11,12 +13,17 @@ function mk_brd(gs) {
 
   let posTile = (t, i) => {
     let x = (i % gs.s),
-        y = Math.floor(i / gs.s)
-    if (y == gs.s) x = -1.5;
-    if (y == (gs.s + 1)) x = gs.s + .5;
+      y = Math.floor(i / gs.s)
     if (y >= gs.s) {
-      y = (i % gs.s) * 1.2 + .3;
-      
+      t.classList.toggle('pq' + x, true);
+      t.classList.toggle('pq', true);
+      t.style.transform = 'translateZ(' + ((x ? 0 : 10) - x * x) + 'vh)';
+      t.style.opacity = x?.5:1;
+
+      if (y == gs.s) x = -1.5;
+      if (y == (gs.s + 1)) x = gs.s + .5;
+      y = (i % gs.s) * 1.1 + 2;
+
     }
     t.style.left = (x * 100 / gs.s) + "%";
     t.style.top = (y * 100 / gs.s) + "%";
@@ -26,12 +33,12 @@ function mk_brd(gs) {
   }
 
   let update = () => { //set up grid
-    gecl('gamebrd', 'p1', gs.tn%2);
-    gecl('gamebrd', 'p0', !(gs.tn%2));
+    gecl('gamebrd', 'p1', gs.tn % 2);
+    gecl('gamebrd', 'p0', !(gs.tn % 2));
 
-    gs.p.forEach((p,i)=>{
-      ge_qs('p'+i,'h2').textContent=p.n;
-      ge_qs('p'+i,'h3').textContent=p.sc+"%";
+    gs.p.forEach((p, i) => {
+      ge_qs('p' + i, 'h2').textContent = p.n;
+      ge_qs('p' + i, 'h3').textContent = p.sc + "%";
     })
 
 
@@ -57,19 +64,21 @@ function mk_brd(gs) {
     return t;
   });
 
-  let _sb=null;
-  let setB=(t,tm)=>{
-    ge('gban').textContent=t;
-    ge_gone('gban',false);
+  let _sb = null;
+  let setB = (t, tm) => {
+    ge('gban').textContent = t;
+    ge_gone('gban', false);
     clearTimeout(_sb);
-    _sb=setTimeout(()=>ge_gone('gban','true'),tm?tm:1000)
+    _sb = setTimeout(() => ge_gone('gban', 'true'), tm ? tm : 1000)
   }
 
   return {
-    setT:(i,t,o,ht)=>setTile(gg[i],t,o,ht),
-    setClk: (f)=>{grid_c=f},
+    setT: (i, t, o, ht) => setTile(gg[i], t, o, ht),
+    setClk: (f) => {
+      grid_c = f
+    },
     setB,
-    flat: ()=>{
+    flat: () => {
       gecl('gamebrd', 'p0', false);
       gecl('gamebrd', 'p1', false);
     },

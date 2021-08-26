@@ -1,4 +1,4 @@
-function m_gs(s, cen, ex, bs,p0,p1) {
+function m_gs(s, cen, ex, bs, p0, p1) {
   let flip = (n) => { //utility to mirror a tile code
     x = ((n >> 1) ^ (n >> 3)) & 1;
     y = ((n >> 0) ^ (n >> 2)) & 1;
@@ -11,6 +11,7 @@ function m_gs(s, cen, ex, bs,p0,p1) {
     winner: -1, //currently unowned
     tls: new Array(s * s).fill(0), //tiles that are the current board
     own: new Array(s * s).fill(-1), //ownership of board
+    tg: new Array(s * s).fill(0), //tile growth
     p: [{
       ...p0,
       ft: ts
@@ -42,19 +43,26 @@ function m_gs(s, cen, ex, bs,p0,p1) {
   return gs;
 }
 
-function h_gsc(gso) {
-  //so make a shallow clone
-  gs={...gso};
-  //are reclone some dynamic bits deeper
-  gs.tls=[...gso.tls];
-  gs.own=[...gso.own];
-  gs.p[0].ft=[...gso.p[0].ft];
-  gs.p[1].ft=[...gso.p[1].ft];
-  return h_gs(gs);
+function h_gsc(gso) { //same as h_gs except it makes a independant clone of the game state
+  //so make a shallow clone with some deeper clone overwrites
+  return h_gs({
+    ...gso,
+    tls: [...gso.tls],
+    own: [...gso.own],
+    tg: [...gso.tg],
+    p: [{
+        ...gso.p[0],
+        ft: [...gso.p[0].ft]
+      },
+      {
+        ...gso.p[1],
+        ft: [...gso.p[1].ft]
+      }
+    ],
+  });
 }
 
-function h_gs(gs) {
-
+function h_gs(gs) { //makes a game state handler for changing the game state
   let checkOwn = (i) => {
     if (gs.own[i] >= 0) return; //we already have a colour
     cq = [];
@@ -74,15 +82,15 @@ function h_gs(gs) {
   }
 
 
-  let calcS=() => {
-    let tot = gs.tls.reduce((a, t) => a+((t & 16) ? 2 : 2), 0);
-    let calc = (p) => gs.tls.reduce((a, t, i) => a+((gs.own[i] == p) ? ((t & 16) ? 10 : 2) : 0), 0)
+  let calcS = () => {
+    let tot = gs.tls.reduce((a, t) => a + ((t & 16) ? 2 : 2), 0);
+    let calc = (p) => gs.tls.reduce((a, t, i) => a + ((gs.own[i] == p) ? ((t & 16) ? 10 : 2) : 0), 0)
 
     gs.p[0].sc = Math.round(calc(0) * 100 / tot);
     gs.p[1].sc = Math.round(calc(1) * 100 / tot);
-    if (gs.p[0].sc>50) gs.winner=0;
-    if (gs.p[1].sc>50) gs.winner=1;
-    if (gs.dCnt>4) gs.winner=(gs.p[0].sc>gs.p[1].sc)?0:1; //if we all discard 5 times the leader wins
+    if (gs.p[0].sc > 50) gs.winner = 0;
+    if (gs.p[1].sc > 50) gs.winner = 1;
+    if (gs.dCnt > 4) gs.winner = (gs.p[0].sc > gs.p[1].sc) ? 0 : 1; //if we all discard 5 times the leader wins
 
   }
 
@@ -118,8 +126,26 @@ function h_gs(gs) {
     return (checkTile(i, 0, -1, t & 1, 4, o) + checkTile(i, 0, 1, t & 4, 1, o) + checkTile(i, 1, 0, t & 2, 8, o) + checkTile(i, -1, 0, t & 8, 2, o)) >= 0;
   }
 
-  let legalM=(ntl,pn)=>
-      gs.tls.map((t, i) => canPlay(i, ntl, pn)?i:-1).filter(i=>(i>=0));
+  let legalM = (ntl, pn) =>
+    gs.tls.map((t, i) => canPlay(i, ntl, pn) ? i : -1).filter(i => (i >= 0));
+
+  let move = (i) => {
+    let pn = gs.tn % 2; //which player
+    let ntl = gs.p[pn].ft.shift(); //use up the tile
+    if (i < 0)
+      gs.dCnt = +1;
+    else {
+      gs.dCnt = 0;
+      add(i, ntl, -1);
+    }
+    //growth time
+    gs.tg.forEach((g,i)=>{
+      if (gs.own[i]<0) return;
+      gs.tg[i]=Math.max(g+1,(gs.tls[i]&16)?5:1); //up to 5 for a pot otherwise 1      
+    })
+    gs.tn += 1;
+    calcS();
+  }
 
   return {
     add,
@@ -127,6 +153,7 @@ function h_gs(gs) {
     legalM,
     canPlace,
     checkOwn,
+    move,
     gs,
   }
 }

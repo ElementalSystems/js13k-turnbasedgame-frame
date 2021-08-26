@@ -1,26 +1,3 @@
-let isLead = 0;
-
-
-function startGameMulti(lead, gamemsg, gameend) {
-  let gb = document.getElementById("game");
-  gb.classList.toggle('gone', false);
-  isLead = lead ? 1 : 0;
-
-  if (lead) {
-    //init game
-    gameState.turn = 1;
-    gameState.initTime = +new Date();
-    gamemsg(gameState);
-    updateBoard();
-  }
-}
-
-function msgGame(data) {}
-
-function endGame() {}
-
-function updateBoard() {}
-
 
 function startGame(gs) {
 
@@ -49,17 +26,13 @@ function startGame(gs) {
       pubTurn(gsh, bd, pn, gs.p[pn?0:1], i, ntl)//inform the opponent
       bd.setClk(null);//kill any click handler on our board
       bd.update();
-      if (i<0) {
-        bd.setB(gs.p[pn].n+": Forced to Discarded");
-        gs.dCnt=+1;
-      } else {
-        gs.dCnt=0;
+      if (i<0)
+        bd.setB(gs.p[pn].n+": Forced to discard");
+      else {
         bd.setB(gs.p[pn].n+": played");
         bd.setT(i,ntl,-1,true);
-        gsh.add(i,ntl,-1);
       }
-      gs.tn += 1; 
-      gs.p[pn].ft.shift(); //use up the tile
+      gsh.move(i); //change the board status
       bd.flat();
       setTimeout(doTurn,1000);
     })
