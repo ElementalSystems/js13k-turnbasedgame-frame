@@ -8,15 +8,35 @@ function selTurn(gsh, bd, pn, p, ntl, mm) {
     if (lm.length == 0) //forced to discard
       mm(-2);
     lm.forEach(i => bd.setT(i, ntl, -1, true)); //show the legal moves
+    bd.setB("Select tile to crack",2000);
     bd.setClk((i) => mm(i)); //set a click handler for each board member
   }
 
   if (p.t == 'r') { //for a remote player wait for a message
-    console.log("waiting for next turn")
+    bd.setB("Waiting for "+p.n+" to play...",60000);
     lobby.waitMsg((m) => mm(m.move)); //wait for remote player to pub that turn.
   }
+  if (p.t == 'a') { //for a ai player
+    if (lm.length == 0) //forced to discard
+      mm(-2);
+    else {
+      let moves=lm.map((i)=>({ //value the legal moves
+        m: i,
+        sc: ai_eval_mv(gsh.gs,p,i,ntl),
+      }))
+      .sort((a,b)=>a.sc-b.sc); //sort our options
+      //wait for a bit
+      setTimeout(()=>mm(moves[0].m),1000+Math.random()*1000)
+    }
 
+  }
 }
+
+function ai_eval_mv(gs,pn,p,i,t)
+{
+  return Math.random();
+}
+
 
 function pubTurn(gsh, bd, pn, op, i, t) {
   if (op.t == 'r') { //for a remote opponent send a message

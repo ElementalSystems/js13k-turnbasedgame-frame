@@ -42,6 +42,17 @@ function m_gs(s, cen, ex, bs,p0,p1) {
   return gs;
 }
 
+function h_gsc(gso) {
+  //so make a shallow clone
+  gs={...gso};
+  //are reclone some dynamic bits deeper
+  gs.tls=[...gso.tls];
+  gs.own=[...gso.own];
+  gs.p[0].ft=[...gso.p[0].ft];
+  gs.p[1].ft=[...gso.p[1].ft];
+  return h_gs(gs);
+}
+
 function h_gs(gs) {
 
   let checkOwn = (i) => {

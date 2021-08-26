@@ -11,13 +11,17 @@ function mk_brd(gs) {
 
   let posTile = (t, i) => {
     let x = (i % gs.s),
-      y = Math.floor(i / gs.s)
+        y = Math.floor(i / gs.s)
     if (y == gs.s) x = -1.5;
     if (y == (gs.s + 1)) x = gs.s + .5;
-    if (y >= gs.s) y = (i % gs.s) * 1.2 + .3;
+    if (y >= gs.s) {
+      y = (i % gs.s) * 1.2 + .3;
+      
+    }
     t.style.left = (x * 100 / gs.s) + "%";
     t.style.top = (y * 100 / gs.s) + "%";
     t.style.width = t.style.height = (100 / gs.s) + "%";
+
     return t;
   }
 
@@ -53,16 +57,18 @@ function mk_brd(gs) {
     return t;
   });
 
-
+  let _sb=null;
+  let setB=(t,tm)=>{
+    ge('gban').textContent=t;
+    ge_gone('gban',false);
+    clearTimeout(_sb);
+    _sb=setTimeout(()=>ge_gone('gban','true'),tm?tm:1000)
+  }
 
   return {
     setT:(i,t,o,ht)=>setTile(gg[i],t,o,ht),
     setClk: (f)=>{grid_c=f},
-    setB:(t,tm)=>{
-      ge('gban').textContent=t;
-      ge_gone('gban',false);
-      setTimeout(()=>ge_gone('gban','true'),tm?tm:1000)
-    },
+    setB,
     flat: ()=>{
       gecl('gamebrd', 'p0', false);
       gecl('gamebrd', 'p1', false);

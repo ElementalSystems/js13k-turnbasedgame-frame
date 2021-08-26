@@ -161,19 +161,19 @@ circle {
   height: 100vh;
   background: #5A5;
   position: relative;
-  transform-origin: bottom;
-  transform: rotatex(40deg);
+  transform-origin: 50% 50%;
+  transform: rotateX(40deg);
   transition: transform 1s, transform-origin 1s;
 }
 
 #gamebrd.p0 {
-  transform-origin: left;
-  transform: rotateY(20deg);
+  transform-origin: 0% 50%;
+  transform: rotateY(20deg) rotateX(5deg);
 }
 
 #gamebrd.p1 {
-  transform-origin: right;
-  transform: rotateY(-20deg);
+  transform-origin: 100% 50%;
+  transform: rotateY(-20deg) rotateX(5deg);
 }
 
 #gban {

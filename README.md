@@ -1,6 +1,4 @@
-# js13kgames.com Two player online Lobby Demo Game Server
-
-Some code showing how to build a Game server for the [js13kGames Competition](http://js13kgames.com/).
+# js13kgames.com Entry 2021
 
 ## Install
 
@@ -23,13 +21,3 @@ To build a minimal version use:
 If you are developing you can watch the src directory (and automatically rebuild without compression) with
 
     npm run watch
-
-
-## What it does
-It allows players on the cloud to enter a nickname and level of ability and enter
- a lobby area which displays other players waiting to play.
-You can select a player to play with and launch a (trivial) game. you can log in
-with two different browser tabs to see it work.
-
-The system is intended for a two player turn based game. You can see it running
-at https://js13ks-lobby.herokuapp.com/
