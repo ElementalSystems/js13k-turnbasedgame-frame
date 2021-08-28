@@ -45,6 +45,10 @@ div#lobby {
   pointer-events: none;
 }
 
+#gamebrd.slow .tile.pq {
+  transition: left 1s, top 1s,transform .8s;
+}
+
 @keyframes flash {
   from {
     opacity: 1;
@@ -66,7 +70,7 @@ div#lobby {
   --linecol: #FFF;
 }
 
-.tile.ht line {
+.tile.ht path {
   animation: flash .5s infinite alternate;
 }
 
@@ -83,9 +87,10 @@ svg {
   height: 100%;
 }
 
-line {
+g {
   stroke: var(--linecol);
-  stroke-width: 2;
+  fill: #333;
+  stroke-width: 5;
   display: none;
 }
 
@@ -95,23 +100,33 @@ circle {
   display: none;
 }
 
-.tile.l0 line.l0 {
+.tile .l1 {
+  transform:rotateZ(90deg);
+}
+.tile .l2 {
+  transform:rotateZ(180deg);
+}
+.tile .l3 {
+  transform:rotateZ(270deg);
+}
+
+.tile.l0 .l0 {
   display: block;
 }
 
-.tile.l1 line.l1 {
+.tile.l1 .l1 {
   display: block;
 }
 
-.tile.l2 line.l2 {
+.tile.l2 .l2 {
   display: block;
 }
 
-.tile.l3 line.l3 {
+.tile.l3 .l3 {
   display: block;
 }
 
-.tile.l4 circle.l4 {
+.tile.l4 .l4 {
   display: block;
 }
 

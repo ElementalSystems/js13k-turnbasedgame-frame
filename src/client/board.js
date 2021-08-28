@@ -43,6 +43,7 @@ function mk_brd(gs) {
 
 
     gg.forEach((t, i) => {
+      posTile(t,i);
       if (i < gs.s * gs.s)
         setTile(t, gs.tls[i], gs.own[i]); //main rack
       else if (i - gs.s < gs.s * gs.s) {
@@ -72,6 +73,22 @@ function mk_brd(gs) {
     _sb = setTimeout(() => ge_gone('gban', 'true'), tm ? tm : 1000)
   }
 
+  let animateM=(pn,i)=>{
+    let si=gs.s * (gs.s + pn); //get the starting index
+    gecl('gamebrd','slow', true); //set the transitions slow
+
+    //reposition the all the tiles
+    for (let c=0;c<gs.s;c+=1)
+       posTile(gg[si+c],(c==0)?i:si+c-1);
+    //wait for that
+    setTimeout(()=>{
+      //reset bam the tile down
+      gg[si].style.transform = 'translateZ(-1vh)';
+      setTimeout(()=>gecl('gamebrd','slow', false),1000); //go back to fast play
+    },1000)
+
+  }
+
   return {
     setT: (i, t, o, ht) => setTile(gg[i], t, o, ht),
     setClk: (f) => {
@@ -83,5 +100,6 @@ function mk_brd(gs) {
       gecl('gamebrd', 'p1', false);
     },
     update,
+    animateM,
   }
 }
