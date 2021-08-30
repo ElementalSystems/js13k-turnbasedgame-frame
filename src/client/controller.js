@@ -38,8 +38,8 @@ function ai_eval_mv(gs,p,i)
   let opn=pn^1; //opponent player number
   let h=h_gsc(gs); //we make a virtual board
   h.move(i);  //and make this move
-  let res=h.gs.p[pn].sc*2-h.gs.p[opn].sc;
-  console.log("move "+i+" val "+res+" --  ");
+  let res=h.gs.p[pn].tsc*2-h.gs.p[opn].tsc;
+  //console.log("move "+i+" val "+res+" --  ");
   return res+Math.random();
 }
 

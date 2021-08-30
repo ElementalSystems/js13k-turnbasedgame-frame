@@ -1,32 +1,88 @@
+
 body {
   margin: 0;
-  perspective: 50vw;
+  perspective: 100vh;
+  font-family: sans-serif;
 }
 
 div#lobby {
-  text-align: center;
+  position:absolute;
+  right: 0;
+  top:0;
+  width: 100vh;
+  height: 100vh;
+  background: #CCC;
+}
+
+#nick {
+  font-size:2rem;
+  padding:.5rem;
+  width: 90vh;
+  color: #558;
+  text-shadow: 0px 1px 0px rgba(255,255,255,.3), 0px -1px 0px rgba(0,0,0,.7);
+  background-color: #CCD;
+  border: inset 2px #CCE;
+
 }
 
 #top, #bot {
-  border: solid 1px #000;
   padding: .5rem;
   margin: .5rem;
+  position: relative;
+  border: inset 1px #EEF;
+
 }
 
-#top label {
-  display: block;
-  margin-bottom: .5rem;
+#bot {
+  position: relative;
+  height: 70vh;
+  overflow: auto;
 }
 
-.brde {
-  max-width: 50rem;
-  background: #FF0;
-  border: solid 2px #000;
-  font-size: 2rem;
-  margin: 1rem auto;
+#bck {
+  position: absolute;
+  right: 0rem;
+  bottom: 0rem;
+}
+
+
+.menui {
+  border: outset 2px #CCE;
+  margin: .2rem;
   cursor: pointer;
   border-radius: .5rem;
+  position:relative;
+  padding: 0;
+  background-color: #CCD;
+
 }
+
+.menui h1 {
+  font-size: 3rem;
+  position: absolute;
+  top: 0;
+  left:0;
+  margin:0;
+}
+
+.menui h2 {
+  font-size: 1.8rem;
+  text-align: center;
+  padding:0;
+  margin: .5rem 0 0 5rem;
+
+  color: #000;
+  text-shadow: 0px 1px 0px rgba(255,255,255,.3), 0px -1px 0px rgba(0,0,0,.7);
+}
+.menui h3 {
+  font-size: 1rem;
+  text-align: center;
+  margin: .1rem 0 .2rem 5rem;
+  color: #444;
+  text-shadow: 0px 1px 0px rgba(255,255,255,.3), 0px -1px 0px rgba(0,0,0,.7);
+}
+
+
 
 .no {
   opacity: .2;
@@ -39,11 +95,25 @@ div#lobby {
 
 .tile {
   --linecol: #444;
-  background: #C0B0BF;
-  border: #000 2px solid;
+  background: #111;
+  border: none;
   position: absolute;
   pointer-events: none;
+  transform-style: preserve-3d;
+  overflow: visible;
 }
+
+.tile svg, .tile div.rig {
+  transform-style: preserve-3d;
+  overflow: visible;
+  position:absolute;
+  top: 0;
+  bottom:0;
+  left:0;
+  right:0;
+}
+
+
 
 #gamebrd.slow .tile.pq {
   transition: left 1s, top 1s,transform .8s;
@@ -65,40 +135,136 @@ div#lobby {
   }
 }
 
+@keyframes growin {
+  from {
+    transform: scaleY(0.01);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+
 .tile.ht {
   pointer-events: all;
   --linecol: #FFF;
 }
 
-.tile.ht path {
+.tile.ht .crack {
   animation: flash .5s infinite alternate;
 }
 
 .tile.p0 {
-  --linecol: #080;
+  --linecol: #0A0;
+  --bkcol: #060;
 }
 
 .tile.p1 {
-  --linecol: #804;
+  --linecol: #D08;
+  --bkcol: #804;
 }
 
-svg {
-  width: 100%;
-  height: 100%;
+
+.tile.ub path.crack {
+  animation: none;
 }
 
-g {
-  stroke: var(--linecol);
+.tile > svg {
+  display: none;
+}
+
+.tile > svg.always {
+  display: block;
+}
+
+path.tbg {
+  stroke: #8888;
+  stroke-width: 8;
+  fill: url(#star);
+}
+
+
+path.crackpot {
+  stroke: none;
+  fill: #333;
+}
+
+
+path.crack {
   fill: #333;
   stroke-width: 5;
-  display: none;
+  stroke: #3339;
+  animation: growin .5s ease-out;
 }
 
-circle {
-  stroke: var(--linecol);
-  stroke-width: 2;
-  display: none;
+.tile.ub path.stem {
+  animation: none;
 }
+
+path.stem {
+  stroke-width: 8;
+  stroke: var(--linecol);
+  display: none;
+  animation: growin 1s ease-in .5s forwards;
+  transform: scaleY(0.01);
+}
+
+path.stemup {
+  stroke: var(--linecol);
+  stroke-width: 4;
+}
+
+.tile .rig.stemup {
+  transition: transform 3s;
+  transform: scale3d(.1,.1,.1);
+}
+
+.tile.g1 .rig.stemup {
+  transform: scale3d(.25,.25,.5);
+}
+
+.tile.g2 .rig.stemup {
+  transform: scale3d(.5,.5,1);
+}
+
+.tile.g3 .rig.stemup {
+  transform: scale3d(.8,.8,1.5);
+
+}
+
+.tile.g4 .rig.stemup {
+  transform: scale3d(1,1,3);
+}
+
+
+
+.tile.p0 path.stem, .tile.p1 path.stem {
+  display:block;
+}
+
+path.leaf {
+  stroke-width: 3;
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  stroke: var(--linecol);
+  fill: #0000;
+  transform: scale3d(1,1,1);
+  transition: transform 4s, fill .5s linear 2s,stroke-dashoffset 1s ease-in 1s;
+}
+
+.tile.g1 path.leaf {
+  stroke-width: 2;
+  stroke-dashoffset: 0;
+  fill: var(--bkcol);
+  transform: scale3d(.7,.7,.7);
+}
+
+
+.tile.g2 path.leaf {
+  transform: scale3d(1,1,1);
+}
+
+
 
 .tile .l1 {
   transform:rotateZ(90deg);
@@ -172,24 +338,25 @@ circle {
 }
 
 #gamebrd {
-  width: 100vh;
-  height: 100vh;
-  background: #5A5;
+  width: 90vh;
+  height: 90vh;
+  margin: 5vh 5vh;
+  background: none;
   position: relative;
-  transform-origin: 50% 50%;
+  xtransform-origin: 50% 100%;
   transform-style: preserve-3d;
   transform: rotateX(40deg);
   transition: transform 1s, transform-origin 1s;
 }
 
 #gamebrd.p0 {
-  transform-origin: 0% 50%;
-  transform: rotateY(20deg) rotateX(5deg);
+  xtransform-origin: 0% 50%;
+  transform: rotateY(20deg) rotateX(0deg);
 }
 
 #gamebrd.p1 {
-  transform-origin: 100% 50%;
-  transform: rotateY(-20deg) rotateX(5deg);
+  xtransform-origin: 100% 50%;
+  transform: rotateY(-20deg) rotateX(0deg);
 }
 
 #gban {

@@ -10,17 +10,20 @@
 <body onload="init()">
 
   <div id="lobby" class="gone">
-    <fieldset id="top">
-      <legend>Your Species</legend>
-      <input type="text" id="nick">
-    </fieldset>
+    <div id="top">
+      <label>Nick
+        <input type="text" id="nick"></label>
+      <label>Level
+        <input type="text" id="lev" value="I'm a newbie"></label>
+      <button id="enter">Enter Lobby</button>
+    </div>
+    <div id="bot" class="no">
+      <h3>Lobby</h3>
+      <div id="board">
 
-    <fieldset id="bot">
-      <legend></legend>
-      <div id="menu">
       </div>
-      <div id="bck" class="menui">Main Menu</div>
-    </fieldset>
+      <button id="leave">Leave Lobby</button>
+    </div>
 
   </div>
   <div id="game" class="gone">
@@ -42,26 +45,23 @@
   </div>
 
   <svg xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <pattern id="star" viewBox="0,0,10,10" width="40%" height="40%">
-        <rect x="0" y="0" height="10" width="10" fill="#BBA"/>
-        <rect x="0" y="0" height="5" width="5" fill="#88A" stroke="#0008" stroke-width=".25"/>
-        <rect x="5" y="5" height="5" width="5" fill="#88A" stroke="#0008" stroke-width=".25"/>
-      </pattern>
-    </defs>
-  </svg>
+  <defs>
+    <pattern id="star" viewBox="0,0,10,10" width="40%" height="40%">
+      <rect x="0" y="0" height="10" width="10" fill="#AAA"/>
+      <rect x="0" y="0" height="5" width="5" fill="#88A"/>
+      <rect x="5" y="5" height="5" width="5" fill="#88A"/>
+
+    </pattern>
+  </defs>
+</svg>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/shared.js"></script>
   <script src="/client.js"></script>
 
 </body>
-<template id="menui">
-  <div class="menui">
-    <h1></h1>
-    <h2></h2>
-    <h3></h3>
-  </div>
+<template id="brde">
+  <div class="brde"></div>
 </template>
 <template id="tile">
   <div class="tile">
@@ -74,16 +74,10 @@
 
   </div>
 </template>
-<template id="crack1">
+<template id="crack">
   <svg viewBox="-100 -100 200 200">
     <path class="crack" d="M-10,0 L2,-54 L-5,-80 L-3,-100 L3,-100 L5,-82 L15,-50 L10,0"/>
     <path class="stem" d="M0,0 L0,-5 Q10,-20 0,-60 T0,-110"/>
-  </svg>
-</template>
-<template id="crack2">
-  <svg viewBox="-100 -100 200 200">
-    <path class="crack" d="M-10,0 L0,-40 L-8,-60 L-3,-61 L-3,-100 L3,-100 L5,-82 L15,-50 L10,0"/>
-    <path class="stem" d="M0,0 L0,-5 Q10,-20 0,-40 T10,-70 T0,-110"/>
   </svg>
 </template>
 <template id="leaf">

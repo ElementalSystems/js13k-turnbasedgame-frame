@@ -21,7 +21,7 @@ function mk_brd(gs) {
                         });
                     } else cloneM(t, "leaf", 3, "p", "l" + i).forEach(lg => {
                         let l = lg.querySelector("svg");
-                        l.style.transform = "translateY(" + -Math.random() * 40 + "%) rotateZ(" + (Math.random() * 90 - 45) + "deg) rotateX(" + (-Math.random() * 45 - 10) + "deg)";
+                        l.style.transform = "translateY(" + -Math.random() * 40 + "%) rotateZ(" + (Math.random() * 90 - 45) + "deg) rotateX(" + -Math.random() * 30 + "deg)";
                     });
                 }
             }
@@ -36,15 +36,11 @@ function mk_brd(gs) {
         if (y >= gs.s) {
             t.classList.toggle("pq" + x, true);
             t.classList.toggle("pq", true);
-            t.style.transform = "translateZ(" + ((x ? 2 : 120 / gs.s) - x) + "vh)";
+            t.style.transform = "translateZ(" + ((x ? 0 : 20) - x) + "vh)";
             t.style.opacity = x ? .5 : 1;
             if (y == gs.s) x = -1.5;
             if (y == gs.s + 1) x = gs.s + .5;
             y = i % gs.s * 1.1 + 2;
-        }
-        if (i < 0) {
-            x = gs.s / 2;
-            y = -10;
         }
         t.style.left = x * 100 / gs.s + "%";
         t.style.top = y * 100 / gs.s + "%";
@@ -65,11 +61,9 @@ function mk_brd(gs) {
             }
         });
     };
-    ge("gamebrd").innerHTML = "";
     let gg = new Array(gs.s * (gs.s + 2)).fill(0).map((d, i) => {
         let t = clone("gamebrd", "tile");
-        t.style.transform = "rotateY(" + (Math.random() * 4 - 2) + "deg) rotateX(" + (Math.random() * 4 - 2) + "deg) rotateZ(" + (Math.random() * 4 - 2) + "deg)";
-        cloneM(t, [ "crack1", "crack2" ], 4, "l", "ex");
+        cloneM(t, "crack", 4, "l", "ex");
         posTile(t, i);
         t.onclick = () => {
             if (grid_c) grid_c(i);
@@ -88,7 +82,7 @@ function mk_brd(gs) {
         gecl("gamebrd", "slow", true);
         for (let c = 0; c < gs.s; c += 1) posTile(gg[si + c], c == 0 ? i : si + c - 1);
         setTimeout(() => {
-            gg[si].style.transform = "translateZ(.5vh)";
+            gg[si].style.transform = "translateZ(-10vh)";
             setTimeout(() => gecl("gamebrd", "slow", false), 1e3);
         }, 1e3);
     };
@@ -149,7 +143,6 @@ function pubTurn(gsh, bd, pn, op, i, t) {
 }
 
 function startGame(gs) {
-    ge_gone("lobby", true);
     ge_gone("game", false);
     let gsh = h_gs(gs);
     let bd = mk_brd(gs);
@@ -160,9 +153,6 @@ function startGame(gs) {
         setTimeout(() => {
             if (gs.winner >= 0) {
                 bd.setB(gs.p[gs.winner].n + " WON!", 5e3);
-                setTimeout(() => {
-                    lobby.gamedone();
-                }, 1e4);
                 return;
             }
             bd.flat(true);
@@ -184,11 +174,6 @@ function startGame(gs) {
         }, 3e3);
     };
     doTurn();
-}
-
-function startGameD(bt, p1, p2) {
-    let gs = m_gs(bt.bs, bt.bs % 2, bt.it, bt.dt, p1, p2);
-    startGame(gs);
 }
 
 function m_gs(s, cen, ex, bs, p0, p1) {
@@ -261,7 +246,7 @@ function h_gs(gs) {
     };
     let calcS = () => {
         let tot = gs.s * gs.s * 2;
-        let calc_sc = p => gs.tls.reduce((a, t, i) => a + (gs.own[i] == p ? gs.tg[i] : 0), 0);
+        let calc_sc = p => gs.tls.reduce((a, t, i) => a + (gs.own[i] == p ? gs.tg[i] * 2 : 0), 0);
         let calc_tsc = p => gs.tls.reduce((a, t, i) => a + (gs.own[i] == p ? t & 16 ? 5 : 2 : 0), 0);
         gs.p[0].sc = Math.round(calc_sc(0) * 100 / tot);
         gs.p[1].sc = Math.round(calc_sc(1) * 100 / tot);
@@ -323,23 +308,23 @@ function h_gs(gs) {
 }
 
 function _init_lobby() {
-    let mp_bt = null;
     let socket = io({
         upgrade: false,
         transports: [ "websocket" ]
     }), board = document.getElementById("board");
+    ge("nick").value = "user" + +new Date() % 1e4;
     socket.on("connect", () => {});
     socket.on("lobby", data => {
-        let op_m = data.available.filter(u => u.nick != ge("nick").value).map(u => ({
-            t: "Play with " + u.nick,
-            lt: u.level,
-            u: u,
-            em: "🔗"
-        }));
-        menu("Player vs Player Online: Select Opponent", op_m, (op, i) => {
-            socket.emit("reqstart", {
-                opponent: op.u.id
-            });
+        board.innerHTML = "";
+        data.available.forEach(u => {
+            if (u.nick == ge("nick").value) return;
+            let b = clone("board", "brde");
+            b.textContent = "Start Game with: " + u.nick + " - [" + u.level + "]";
+            b.onclick = () => {
+                socket.emit("reqstart", {
+                    opponent: u.id
+                });
+            };
         });
     });
     socket.on("disconnect", () => {});
@@ -353,6 +338,7 @@ function _init_lobby() {
         _msgT = f;
     };
     socket.on("playstart", d => {
+        ge_gone("lobby", true);
         let op = {
             n: d.op,
             t: "r"
@@ -362,13 +348,15 @@ function _init_lobby() {
             t: "l"
         };
         if (d.lead) {
-            let gs = m_gs(mp_bt.bs, mp_bt.bs % 2, mp_bt.it, mp_bt.dt, tp, op);
+            let gs = m_gs(9, true, [ 23, 21, 26 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], tp, op);
             msg(gs);
+            console.log(gs);
             startGame(gs);
         } else {
             waitMsg(gs => {
                 gs.p[0].t = "r";
                 gs.p[1].t = "l";
+                console.log(gs);
                 startGame(gs);
             });
         }
@@ -378,92 +366,26 @@ function _init_lobby() {
         endGame();
     });
     socket.on("error", () => {});
-    geclk("bck", () => {
-        leave_mp();
-    });
-    let msg = m => {
-        socket.emit("gm", m);
-    };
-    menu = (title, ops, act) => {
-        ge("menu").innerHTML = "";
-        ge_qs("bot", "legend").textContent = title;
-        ops.forEach((op, i) => {
-            let b = clone("menu", "menui");
-            qs_txt(b, "h1", op.em);
-            qs_txt(b, "h2", op.t);
-            qs_txt(b, "h3", op.lt);
-            b.onclick = () => {
-                act(op, i);
-            };
-        });
-    };
-    let enter_mp = bt => {
-        mp_bt = bt;
+    geclk("enter", () => {
         socket.emit("el", {
             nick: ge("nick").value,
-            level: bt.t
+            level: ge("lev").value
         });
         ge_no("top", true);
-    };
-    leave_mp = () => {
-        if (mp_bt) socket.emit("ll", {});
-        mp_bt = null;
-        reset();
-    };
-    gamedone = () => {
-        if (mp_bt) socket.emit("reqend");
-        ge_gone("lobby", false);
-        ge_gone("game", true);
-    };
-    reset = () => {
-        ge_gone("lobby", false);
-        menu("Choose your Style", m_main, (mi, go) => {
-            switch (go) {
-              case 1:
-                menu("Player vs Computer: Board Type", m_gt, (bt, i) => {
-                    menu("Player vs Computer: Opponent", m_ais, (ai, i) => {
-                        p1 = {
-                            n: ge("nick").value,
-                            t: "l"
-                        };
-                        p2 = {
-                            n: ai.t,
-                            t: "a"
-                        };
-                        startGameD(bt, p1, p2);
-                    });
-                });
-                break;
-
-              case 2:
-                menu("Player vs Player Local: Board Type", m_gt, (bt, i) => {
-                    p1 = {
-                        n: ge("nick").value,
-                        t: "l"
-                    };
-                    p2 = {
-                        n: "Player 2",
-                        t: "l"
-                    };
-                    startGameD(bt, p1, p2);
-                });
-                break;
-
-              case 3:
-                menu("Player vs Player Online: Board Type", m_gt, (bt, i) => {
-                    enter_mp(bt);
-                });
-                break;
-            }
-        });
+        ge_no("bot", false);
+    });
+    geclk("leave", () => {
+        socket.emit("ll", {});
+        ge_no("top", false);
+        ge_no("bot", true);
+    });
+    let msg = m => {
+        console.log(m);
+        socket.emit("gm", m);
     };
     return {
         waitMsg: waitMsg,
-        msg: msg,
-        menu: menu,
-        enter_mp: enter_mp,
-        reset: reset,
-        gamedone: gamedone
+        msg: msg
     };
 }
 
@@ -471,77 +393,21 @@ var lobby = null;
 
 function start_lobby() {
     if (!lobby) lobby = _init_lobby();
-    ge("nick").value = "user" + +new Date() % 1e4;
-    lobby.reset();
+    ge_gone("lobby", false);
 }
 
 function init() {
     let p1 = {
         n: "Player 1",
-        t: "a"
+        t: "l"
     };
     let p2 = {
         n: "I. Diot",
         t: "a"
     };
-    let gs = m_gs(9, true, [ 23, 21, 26, 19 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], p1, p2);
-    start_lobby();
+    let gs = m_gs(9, true, [ 23, 21, 26 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], p1, p2);
+    startGame(gs);
 }
-
-let m_main = [ {
-    t: "Learn to Play",
-    em: "🎓",
-    lt: "Quick tutorials to learn to play"
-}, {
-    t: "Play vs Computer",
-    em: "💻",
-    lt: "Play against various AI opponents"
-}, {
-    t: "Player vs Local Player",
-    em: "🎎",
-    lt: "Play against a friend on one device"
-}, {
-    t: "Player vs Online Player",
-    em: "🔗",
-    lt: "Play against a human online"
-} ];
-
-let m_ais = [ {
-    t: "I.Diot",
-    em: "💻",
-    lt: "Not very good"
-}, {
-    t: "Defensive",
-    em: "💻",
-    lt: "Not very good"
-}, {
-    t: "Geni Use",
-    em: "💻",
-    lt: "Not very good"
-} ];
-
-let m_gt = [ {
-    t: "7 x 7 Beginners Board",
-    em: "🎪",
-    bs: 7,
-    it: [ 7, 19 ],
-    dt: [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ],
-    lt: "Small board for a quick game"
-}, {
-    t: "9 x 9 Standard Board",
-    bs: 9,
-    em: "🥋",
-    lt: "Standard symetric starting",
-    it: [ 23, 21, 26, 19 ],
-    dt: [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ]
-}, {
-    t: "6 x 6 Expert Fast Kill",
-    bs: 6,
-    em: "🎯",
-    lt: "Fast and tight quick game",
-    it: [ 7, 20, 22 ],
-    dt: [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ]
-} ];
 
 let ge = id => document.getElementById(id);
 
@@ -565,16 +431,9 @@ let clone = (pid, tempid) => {
 
 let ge_qs = (id, qs) => ge(id).querySelector(qs);
 
-let qs_txt = (e, qs, txt) => e.querySelector(qs).textContent = txt;
-
-let oneof = x => {
-    if (!Array.isArray(x)) return x;
-    return x[Math.floor(Math.random() * x.length)];
-};
-
 let cloneM = (par, tempid, n, cp, cls) => {
     return new Array(n).fill(0).map((_, i) => {
-        let nn = cloneIn(par, oneof(tempid), "*");
+        let nn = cloneIn(par, tempid, "*");
         nn.classList.toggle(cp + i, true);
         nn.classList.toggle(cls, true);
         return nn;

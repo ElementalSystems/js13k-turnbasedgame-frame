@@ -1,27 +1,25 @@
 function _init_lobby() {
 
+  let mp_bt=null;
+
   let socket = io({
       upgrade: false,
       transports: ["websocket"]
     }),
     board = document.getElementById("board");
 
-  ge('nick').value = "user" + (+(new Date()) % 10000);
-
-
   socket.on("connect", () => {});
   socket.on("lobby", (data) => {
-    board.innerHTML = '';
-    data.available.forEach((u) => {
-      if (u.nick == ge('nick').value) return;
-      let b = clone('board', 'brde');
-      b.textContent = 'Start Game with: ' + u.nick + ' - [' + u.level + ']';
-      b.onclick = () => {
-        socket.emit("reqstart", {
-          opponent: u.id
-        })
-      };
-    })
+    let op_m=data.available.filter(u=>(u.nick != ge('nick').value))
+                           .map(u=>({
+                             t: 'Play with ' + u.nick,
+                             lt: u.level,
+                             u,
+                             em: '🔗',
+                           }));
+     menu("Player vs Player Online: Select Opponent",op_m,(op,i)=>{
+       socket.emit("reqstart", { opponent: op.u.id  })
+     })
   });
 
 
@@ -37,12 +35,11 @@ function _init_lobby() {
 
 
   let waitMsg = (f) => {
-    _msgT = f;    
+    _msgT = f;
   }
 
 
   socket.on("playstart", (d) => {
-    ge_gone('lobby', true);
     let op = {
       n: d.op,
       t: 'r',
@@ -53,15 +50,13 @@ function _init_lobby() {
     }
 
     if (d.lead) { //if d.lead init your game
-      let gs = m_gs(9, true, [23, 21, 26], [3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5], tp, op);
+      let gs=m_gs(mp_bt.bs,mp_bt.bs%2,mp_bt.it,mp_bt.dt,tp,op);
       msg(gs);
-      console.log(gs);
       startGame(gs);
     } else {
       waitMsg(gs => { //we expect to get a game state first
         gs.p[0].t = 'r'; //overwrite the players in reverse and play our side
         gs.p[1].t = 'l';
-        console.log(gs);
         startGame(gs)
       })
     }
@@ -74,34 +69,92 @@ function _init_lobby() {
   });
 
 
-
-
   socket.on("error", () => {});
 
-  geclk("enter", () => {
-    socket.emit("el", {
-      nick: ge('nick').value,
-      level: ge('lev').value
-    })
-    ge_no('top', true);
-    ge_no('bot', false);
-  });
+  geclk("bck", () => {
+    leave_mp();
 
-  geclk("leave", () => {
-    socket.emit("ll", {})
-    ge_no('top', false);
-    ge_no('bot', true);
   });
 
   let msg = (m) => {
-    console.log(m);
     socket.emit("gm", m)
   }
+
+  menu=(title,ops,act)=>{
+    ge('menu').innerHTML = '';
+    ge_qs('bot','legend').textContent=title;
+    ops.forEach((op,i)=>{
+      let b = clone('menu', 'menui');
+      qs_txt(b,'h1',op.em);
+      qs_txt(b,'h2',op.t);
+      qs_txt(b,'h3',op.lt);
+      b.onclick = () => { act(op,i);  };
+    })
+
+  }
+
+  let enter_mp=(bt)=>
+  {
+    mp_bt=bt;
+    socket.emit("el", {
+      nick: ge('nick').value,
+      level: bt.t,
+    });
+    ge_no('top', true);
+  }
+
+  leave_mp=()=>{
+    if (mp_bt)  socket.emit("ll", {})
+    mp_bt=null;
+    reset();
+  }
+
+  gamedone=()=>{
+    if (mp_bt) socket.emit("reqend");
+    ge_gone('lobby', false);
+    ge_gone('game', true);
+  }
+
+  reset=()=>{
+    ge_gone('lobby', false);
+    menu("Choose your Style",m_main,(mi,go)=>{
+      switch (go) {
+        case 1:
+          menu("Player vs Computer: Board Type",m_gt,(bt,i)=>{
+            menu("Player vs Computer: Opponent",m_ais,(ai,i)=>{
+              p1={ n: ge('nick').value, t:'l'};
+              p2={ n: ai.t , t:'a'};
+              startGameD(bt,p1,p2);
+            })
+          })
+          break;
+        case 2:
+          menu("Player vs Player Local: Board Type",m_gt,(bt,i)=>{
+            p1={ n: ge('nick').value, t:'l'};
+            p2={ n: 'Player 2', t:'l'};
+            startGameD(bt,p1,p2);
+          })
+          break;
+        case 3:
+          menu("Player vs Player Online: Board Type",m_gt,(bt,i)=>{
+              enter_mp(bt);
+          })
+          break;
+      }
+    })
+
+
+  }
+
 
 
   return {
     waitMsg,
     msg,
+    menu,
+    enter_mp,
+    reset,
+    gamedone,
   }
 };
 
@@ -110,5 +163,9 @@ var lobby = null;
 function start_lobby() {
   if (!lobby)
     lobby = _init_lobby();
-  ge_gone('lobby', false);
+
+  ge('nick').value = "user" + (+(new Date()) % 10000);
+
+  lobby.reset();
+
 }

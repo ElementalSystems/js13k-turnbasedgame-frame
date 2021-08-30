@@ -37,8 +37,7 @@ function m_gs(s, cen, ex, bs, p0, p1) {
 
 
   if (cen) h.add(Math.floor((gs.s * gs.s) / 2), 31, -1);
-  add_r(23, true);
-  ex.forEach(t => add_r(t));
+  ex.forEach((t,ind) => add_r(t,ind==0)); //first one is a start peice
 
   return gs;
 }
@@ -83,11 +82,14 @@ function h_gs(gs) { //makes a game state handler for changing the game state
 
 
   let calcS = () => {
-    let tot = gs.tls.reduce((a, t) => a + ((t & 16) ? 2 : 2), 0);
-    let calc = (p) => gs.tls.reduce((a, t, i) => a + ((gs.own[i] == p) ? ((t & 16) ? 10 : 2) : 0), 0)
+    let tot = gs.s*gs.s*2
+    let calc_sc = (p) => gs.tls.reduce((a, t, i) => a + ((gs.own[i] == p) ? (gs.tg[i]) : 0), 0)
+    let calc_tsc = (p) => gs.tls.reduce((a, t, i) => a + ((gs.own[i] == p) ? ((t&16)?5:2) : 0), 0)
 
-    gs.p[0].sc = Math.round(calc(0) * 100 / tot);
-    gs.p[1].sc = Math.round(calc(1) * 100 / tot);
+    gs.p[0].sc = Math.round(calc_sc(0) * 100 / tot);
+    gs.p[1].sc = Math.round(calc_sc(1) * 100 / tot);
+    gs.p[0].tsc = Math.round(calc_tsc(0) * 100 / tot);
+    gs.p[1].tsc = Math.round(calc_tsc(1) * 100 / tot);
     if (gs.p[0].sc > 50) gs.winner = 0;
     if (gs.p[1].sc > 50) gs.winner = 1;
     if (gs.dCnt > 4) gs.winner = (gs.p[0].sc > gs.p[1].sc) ? 0 : 1; //if we all discard 5 times the leader wins
@@ -97,6 +99,7 @@ function h_gs(gs) { //makes a game state handler for changing the game state
   let add = (i, t, o) => {
     gs.tls[i] = t;
     gs.own[i] = o;
+    if (o!=-1) gs.tg[i]=1; //if we add it owned then its planted.
     checkOwn(i);
     calcS();
   };
@@ -132,18 +135,20 @@ function h_gs(gs) { //makes a game state handler for changing the game state
   let move = (i) => {
     let pn = gs.tn % 2; //which player
     let ntl = gs.p[pn].ft.shift(); //use up the tile
+    //okay play the board
     if (i < 0)
       gs.dCnt = +1;
     else {
       gs.dCnt = 0;
       add(i, ntl, -1);
     }
+    gs.tn += 1;
+
     //growth time
     gs.tg.forEach((g,i)=>{
       if (gs.own[i]<0) return;
-      gs.tg[i]=Math.max(g+1,(gs.tls[i]&16)?5:1); //up to 5 for a pot otherwise 1      
+      gs.tg[i]=Math.min(g+1,(gs.tls[i]&16)?5:2); //up to 5 for a pot otherwise 1
     })
-    gs.tn += 1;
     calcS();
   }
 
