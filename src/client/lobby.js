@@ -183,13 +183,34 @@ function start_lobby() {
 
   ge('nick').value = "user" + (+(new Date()) % 10000);
 
+  //set up the intro board
+  let ig=m_gs(7,'intro');
+  let ib=mk_brd(ig);
+  ib.update();
+  ib.flat(false);
+
 
   lobby.menu("Welcome to A Space in the Sun", false, [{
-    t: "START GROWING",
+    t: "GROW",
     lt: "Tap here to begin",
-    em: ''
+    em: '🌱'
   }], () => {
     document.documentElement.requestFullscreen();
+    ig.own.forEach((_,i)=>{
+      ig.own[i]=(i<20)?0:1;
+      ig.tg[i]=1;
+    })
+    setTimeout(()=>{
+      ib.update();
+      ib.flat(true);
+      setTimeout(()=>{
+        ig.own.forEach((_,i)=>{
+          ig.tg[i]=2;
+        })        
+        ib.update();
+      },5000);
+    },500);
+
     lobby.reset();
   });
 

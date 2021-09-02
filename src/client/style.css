@@ -117,12 +117,20 @@ body {
 
 .tile {
   --linecol: #444;
-  background: #111;
+  background: none;
   border: none;
   position: absolute;
   pointer-events: none;
   transform-style: preserve-3d;
   overflow: visible;
+}
+
+.tile span {
+  font-size: 10vh;
+  padding: 2vh 0 0vh 4vh;
+  display:block;
+  color: #3368;
+  text-shadow: 1px 1px 0px rgba(255,255,255,.6), -1px -1px 0px rgba(0,0,0,.8);
 }
 
 .tile svg, .tile div.rig {
@@ -133,6 +141,10 @@ body {
   bottom:0;
   left:0;
   right:0;
+}
+
+#game.isI .tile.pq {
+  display: none;
 }
 
 .tile.pq {
@@ -164,6 +176,7 @@ body {
 
 .tile.pq .always {
   display: none;
+
 }
 
 #gamebrd.slow .tile.pq {
@@ -230,6 +243,7 @@ body {
 
 .tile > svg.always {
   display: block;
+  transform: translateZ(-1px);
 }
 
 path.tbg {
@@ -371,6 +385,10 @@ path.leaf {
   padding: 1rem;
   float: left;
   --pc: var(--p0c3);
+}
+
+#game.isI .ps {
+  display:none;
 }
 
 .ps h2 {

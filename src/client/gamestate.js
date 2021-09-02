@@ -12,6 +12,7 @@ function m_gs(s, cen, ex, bs, p0, p1) {
     tls: new Array(s * s).fill(0), //tiles that are the current board
     own: new Array(s * s).fill(-1), //ownership of board
     tg: new Array(s * s).fill(0), //tile growth
+    txt: new Array(s * s).fill(''),
     p: [{
       ...p0,
       ft: ts
@@ -30,15 +31,34 @@ function m_gs(s, cen, ex, bs, p0, p1) {
       //choose a random tile
       i = Math.floor(Math.random() * gs.s * gs.s);
       if (start) i = Math.floor(i / gs.s) * gs.s; //if start force it to the left most column
-    } while (!h.canPlace(i, t, start ? 0 : -1)) //check if it's legal if not restart
+    } while (!h.canPlace(i, t)) //check if it's legal if not restart
     h.add(i, t, start ? 0 : -1,-1); //add the tile
     h.add(gs.s * gs.s - 1 - i, flip(t), start ? 1 : -1,-1); //okay generate the mathcing fliped tile in the sq - position
   }
 
 
-  if (cen) h.add(Math.floor((gs.s * gs.s) / 2), 31, -1,-1);
-  ex.forEach((t,ind) => add_r(t,ind==0)); //first one is a start peice
+  if (cen==='intro') {
+    let at=(si,s)=>{
+      s.forEach((c,i)=>{
+        if (c===(+c)) {
+          gs.tls[i+si]=c;
+        } else
+          gs.txt[i+si]=c;
+      })
+    }
 
+    at(0,['A',6,10]);
+    at(8,[3,12]);
+    at(15,[10,9,...'PACE']);
+    at(21,[...'IN']);
+    at(28,[...'THE',6,10]);
+    at(38,[3,12]);
+    at(45,[10,9,...'UN']);
+    gs.isI=true;
+  } else {
+    if (cen) h.add(Math.floor((gs.s * gs.s) / 2), 31, -1,-1);
+    ex.forEach((t,ind) => add_r(t,ind==0)); //first one is a start peice
+  }
   return gs;
 }
 
@@ -117,34 +137,36 @@ function h_gs(gs) { //makes a game state handler for changing the game state
    and returns -999 if illegal; or -1,0 or 1 to reflect the tiles destined ownership
    passing a -1 for t will assume the tile 'fits' perfectly and calculate the outcome
  */
-  let playOutcome=(i,t,o)=>{ //index, tile, direction 0-3 and owner playing
+  let playOutcome=(i,t,o)=>{ //index, tile and owner playing
     //for each direction
     let r=[0,1,2,3].map(d=>{
        let db=(1<<d),
            rdb=(1<<((d+2)%4)), //reverse direction bit
            tt=getTD(i,d); //returns the type and owner of the tile at d from i
        if (tt.t==0) return -2; //allowed!
-       if (t==-1) {//special case for wildcard tile mathes anyone
+       if (t==-1) {//special case for wildcard tile matches anyone
          return (tt.t&rdb)?tt.o:-1;
        }
        //check we match paths
        if ((tt.t>0)&&((!!(tt.t&rdb))!=(!!(t&db)))) return -999; //doesn't match the points
        return (t&db)?tt.o:-1; //if we do have a connection then we'll get that colour
     });
-    console.log(r,o);
     if (r.includes(-999)) return -999; //a bad connection is a bad tile
     if (r.includes(o)) return o; //if it could be ours it will be
     if (r.includes(o^1)) return o^1; //otherwise the opponents
-    return -1;  //won't change
+    if (r.includes(-1)) return -1; //at least one unknown tile is linked
+    return -2;  //must be all empty breakables to return -2
   }
 
   let canPlay = (i, t, o) => {
     if (gs.tls[i] != 0) return false; //already something there
     return [-1,-2,o].includes(playOutcome(i,t,o)) //if it's ours or unowned then we can play
   }
-  let canPlace = (i, t, o) => {
+
+  let canPlace = (i, t) => {
     if (gs.tls[i] != 0) return false; //already something there
-    return [-1,-2,o].includes(playOutcome(i,t,o)) //if it's ours or unowned then we can play
+    let po=playOutcome(i,t,0);
+    return [-2].includes(po) //if it's ours or unowned then we can play
   }
 
   let legalM = (ntl, pn) =>

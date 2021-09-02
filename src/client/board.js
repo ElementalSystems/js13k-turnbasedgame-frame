@@ -85,6 +85,7 @@ function mk_brd(gs) {
   ge('gamebrd').innerHTML='';
   let gg = new Array(gs.s * (gs.s + 2)).fill(0).map((d, i) => {
     let t = clone('gamebrd', 'tile');
+    if (gs.txt[i]) t.querySelector('span').textContent=gs.txt[i];
     t.style.transform="rotateY("+(Math.random()*4-2)+"deg) rotateX("+(Math.random()*4-2)+"deg) rotateZ("+(Math.random()*4-2)+"deg)";
     cloneM(t,['crack1','crack2'],4,'l','ex')
     posTile(t, i);
@@ -105,20 +106,23 @@ function mk_brd(gs) {
   let animateM=(pn,i)=>{
     let si=gs.s * (gs.s + pn); //get the starting index
     gecl('gamebrd','slow', true); //set the transitions slow
-
+    ae.slide();
     //reposition the all the tiles
     for (let c=0;c<gs.s;c+=1)
        posTile(gg[si+c],(c==0)?i:si+c-1);
     //wait for that
     setTimeout(()=>{
-      //reset bam the tile down
+      //bam the tile down
       gg[si].style.transform = 'translateZ(.5vh)';
+      ae.crack();
       setTimeout(()=>gecl('gamebrd','slow', false),1000); //go back to fast play
     },1000)
 
   }
 
   let flat=(p)=> {
+    p?ae.flt_out():ae.flt_in();
+    gecl('game', 'isI', !!gs.isI);
     gecl('game', 'p1', p&&(gs.tn % 2));
     gecl('game', 'p0', p&&(!(gs.tn % 2)));
   };
