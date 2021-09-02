@@ -1,6 +1,7 @@
 function startGame(gs) {
-  ge_gone('lobby', true);
-  ge_gone('game', false);
+  //ge_gone('lobby', true);
+  //ge_gone('game', false);
+  document.body.classList.toggle('ms',false);
   let gsh = h_gs(gs)
   let bd = mk_brd(gs);
 
@@ -13,10 +14,10 @@ function startGame(gs) {
     setTimeout(() => {
       //maybe someone won
       if (gs.winner >= 0) {
-        bd.setB(gs.p[gs.winner].n + " WON!", 5000);
+        bd.setB(gs.p[gs.winner].n + " WON!", 50000);
         setTimeout(()=>{
           lobby.gamedone();
-        },10000)
+        },5000)
         return;
       }
       bd.flat(true);
@@ -25,17 +26,16 @@ function startGame(gs) {
       let ntl = gs.p[pn].ft[0]; //the current top tile
       bd.setB(gs.p[pn].n + "'s turn");
 
-      selTurn(gsh, bd, pn, gs.p[pn], ntl, (i) => {
+      selTurnSoon(gsh, bd, pn, gs.p[pn], ntl, (i) => {
         pubTurn(gsh, bd, pn, gs.p[pn ? 0 : 1], i, ntl) //inform the opponent
         bd.setClk(null); //kill any click handler on our board
         bd.flat(false);
         bd.update();
         if (i < 0)
-          bd.setB(gs.p[pn].n + ": Forced to discard");
-        else {
-          bd.setB(gs.p[pn].n + ": played");
-          bd.animateM(pn, i)
-        }
+          bd.setB(gs.p[pn].n + "was forced to discard ("+(gs.dCnt+1)+")");
+        else
+          bd.setB(gs.p[pn].n + " played");
+        bd.animateM(pn, i)
         gsh.move(i); //change the board status
         setTimeout(doTurn, 2000);
       })

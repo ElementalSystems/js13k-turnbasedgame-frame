@@ -31,12 +31,12 @@ function m_gs(s, cen, ex, bs, p0, p1) {
       i = Math.floor(Math.random() * gs.s * gs.s);
       if (start) i = Math.floor(i / gs.s) * gs.s; //if start force it to the left most column
     } while (!h.canPlace(i, t, start ? 0 : -1)) //check if it's legal if not restart
-    h.add(i, t, start ? 0 : -1); //add the tile
-    h.add(gs.s * gs.s - 1 - i, flip(t), start ? 1 : -1); //okay generate the mathcing fliped tile in the sq - position
+    h.add(i, t, start ? 0 : -1,-1); //add the tile
+    h.add(gs.s * gs.s - 1 - i, flip(t), start ? 1 : -1,-1); //okay generate the mathcing fliped tile in the sq - position
   }
 
 
-  if (cen) h.add(Math.floor((gs.s * gs.s) / 2), 31, -1);
+  if (cen) h.add(Math.floor((gs.s * gs.s) / 2), 31, -1,-1);
   ex.forEach((t,ind) => add_r(t,ind==0)); //first one is a start peice
 
   return gs;
@@ -62,22 +62,17 @@ function h_gsc(gso) { //same as h_gs except it makes a independant clone of the 
 }
 
 function h_gs(gs) { //makes a game state handler for changing the game state
-  let checkOwn = (i) => {
+
+  let checkOwn = (i,o) => {
     if (gs.own[i] >= 0) return; //we already have a colour
-    cq = [];
-    let cs = (j) => {
-      if (gs.tls[j] == 0) return; //doesn't matter
-      if (gs.own[j] >= 0)
-        gs.own[i] = gs.own[j]; //we found one colour me for him
-      else //this might change things for another area
-        cq.push(j);
+    gs.own[i]=playOutcome(i,gs.tls[i],o);
+    if (gs.own[i]>=0) { //now we have colour it might spread so check around us
+       [0,1,2,3].forEach(d=>{
+         let ni=getTD(i,d).i;
+         if (ni>=0) //is a real tile
+          checkOwn(ni,o);
+       })
     }
-    let t = gs.tls[i];
-    if (t & 1) cs(i - gs.s);
-    if (t & 2) cs(i + 1);
-    if (t & 4) cs(i + gs.s);
-    if (t & 8) cs(i - 1);
-    if (gs.own[i] >= 0) cq.forEach(d => checkOwn(d)); //we are alive now recursively check surrounds
   }
 
 
@@ -96,37 +91,60 @@ function h_gs(gs) { //makes a game state handler for changing the game state
 
   }
 
-  let add = (i, t, o) => {
+  let add = (i, t, o, op) => {
     gs.tls[i] = t;
     gs.own[i] = o;
     if (o!=-1) gs.tg[i]=1; //if we add it owned then its planted.
-    checkOwn(i);
+    checkOwn(i,op);
     calcS();
   };
 
 
-  let checkTile = (i, xo, yo, path, bit, own) => { //return +1 if tile is okay; -10 if tile is impossible or 0 if tile is open
-    let xp = i % gs.s + xo,
-      yp = Math.floor(i / gs.s) + yo;
-    if ((xp < 0) || (xp >= gs.s) || (yp < 0) || (yp >= gs.s)) return path ? -10 : 0;
-    let t = gs.tls[i + xo + yo * gs.s];
-    if (!t) return 0; //complete tiles don't hold space either way
-    let o = gs.own[i + xo + yo * gs.s];
-    if (path && (o != own) && (o >= 0)) return -10; //it's owned by my enemy
-    let isP = (t & bit);
-    return ((!!isP) == (!!path)) ? 1 : -10;
-  }
 
+  let getTD=(i,d)=>{  //get tile in direction d from i
+    let xp = i % gs.s + [0,1,0,-1][d],
+        yp = Math.floor(i / gs.s) + [-1,0,1,0][d];
+    if ((xp < 0) || (xp >= gs.s) || (yp < 0) || (yp >= gs.s)) return {t:0, o:-1, i:-1};
+    let ni=yp*gs.s+xp;
+    return {
+      i: ni,
+      t:gs.tls[ni],
+      o:gs.own[ni]
+    }
+  }
+ /*
+   play outcomes "if I played this tile here what would be the outcome"
+   and returns -999 if illegal; or -1,0 or 1 to reflect the tiles destined ownership
+   passing a -1 for t will assume the tile 'fits' perfectly and calculate the outcome
+ */
+  let playOutcome=(i,t,o)=>{ //index, tile, direction 0-3 and owner playing
+    //for each direction
+    let r=[0,1,2,3].map(d=>{
+       let db=(1<<d),
+           rdb=(1<<((d+2)%4)), //reverse direction bit
+           tt=getTD(i,d); //returns the type and owner of the tile at d from i
+       if (tt.t==0) return -2; //allowed!
+       if (t==-1) {//special case for wildcard tile mathes anyone
+         return (tt.t&rdb)?tt.o:-1;
+       }
+       //check we match paths
+       if ((tt.t>0)&&((!!(tt.t&rdb))!=(!!(t&db)))) return -999; //doesn't match the points
+       return (t&db)?tt.o:-1; //if we do have a connection then we'll get that colour
+    });
+    console.log(r,o);
+    if (r.includes(-999)) return -999; //a bad connection is a bad tile
+    if (r.includes(o)) return o; //if it could be ours it will be
+    if (r.includes(o^1)) return o^1; //otherwise the opponents
+    return -1;  //won't change
+  }
 
   let canPlay = (i, t, o) => {
     if (gs.tls[i] != 0) return false; //already something there
-    //check if I can play
-    return (checkTile(i, 0, -1, t & 1, 4, o) + checkTile(i, 0, 1, t & 4, 1, o) + checkTile(i, 1, 0, t & 2, 8, o) + checkTile(i, -1, 0, t & 8, 2, o)) >= 0;
+    return [-1,-2,o].includes(playOutcome(i,t,o)) //if it's ours or unowned then we can play
   }
   let canPlace = (i, t, o) => {
     if (gs.tls[i] != 0) return false; //already something there
-    //check if I can place here
-    return (checkTile(i, 0, -1, t & 1, 4, o) + checkTile(i, 0, 1, t & 4, 1, o) + checkTile(i, 1, 0, t & 2, 8, o) + checkTile(i, -1, 0, t & 8, 2, o)) >= 0;
+    return [-1,-2,o].includes(playOutcome(i,t,o)) //if it's ours or unowned then we can play
   }
 
   let legalM = (ntl, pn) =>
@@ -137,10 +155,10 @@ function h_gs(gs) { //makes a game state handler for changing the game state
     let ntl = gs.p[pn].ft.shift(); //use up the tile
     //okay play the board
     if (i < 0)
-      gs.dCnt = +1;
+      gs.dCnt += 1;
     else {
       gs.dCnt = 0;
-      add(i, ntl, -1);
+      add(i, ntl, -1,pn);
     }
     gs.tn += 1;
 
@@ -157,8 +175,8 @@ function h_gs(gs) { //makes a game state handler for changing the game state
     canPlay,
     legalM,
     canPlace,
-    checkOwn,
     move,
     gs,
+    playOutcome,
   }
 }

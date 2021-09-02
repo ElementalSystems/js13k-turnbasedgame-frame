@@ -2,14 +2,21 @@
    Contains all the abstarction about how to make a turn.
 */
 
+function selTurnSoon(gsh, bd, pn, p, ntl, mm) {
+  setTimeout(()=>selTurn(gsh, bd, pn, p, ntl, mm),1000);
+}
+
 function selTurn(gsh, bd, pn, p, ntl, mm) {
   let lm = gsh.legalM(ntl, pn);
   if (p.t == 'l') { //for a local  player
-    if (lm.length == 0) //forced to discard
+    if (lm.length == 0) {//forced to discard
       mm(-2);
+      return;
+    }
+    bd.setClk((i) => mm(i)); //set a click handler for board
     lm.forEach(i => bd.setT(i, ntl, -1, true)); //show the legal moves
     bd.setB("Select tile to crack",2000);
-    bd.setClk((i) => mm(i)); //set a click handler for each board member
+    bd.setClk((i) => mm(i)); //set a click handler for board
   }
 
   if (p.t == 'r') { //for a remote player wait for a message
@@ -28,7 +35,6 @@ function selTurn(gsh, bd, pn, p, ntl, mm) {
       //wait for a bit and then play the bext move
       setTimeout(()=>mm(moves[0].m),1000+Math.random()*1000)
     }
-
   }
 }
 
@@ -39,7 +45,11 @@ function ai_eval_mv(gs,p,i)
   let h=h_gsc(gs); //we make a virtual board
   h.move(i);  //and make this move
   let res=h.gs.p[pn].tsc*2-h.gs.p[opn].tsc;
-  //console.log("move "+i+" val "+res+" --  ");
+  if (gs.winner==pn) res+=10000;
+  if (gs.winner==opn) res-=10000;
+  //todo: analyse end points by colour
+  //metric distances betwwen endpoints
+
   return res+Math.random();
 }
 

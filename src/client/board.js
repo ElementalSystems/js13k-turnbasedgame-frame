@@ -42,23 +42,22 @@ function mk_brd(gs) {
     let x = (i % gs.s),
         y = Math.floor(i / gs.s);
     if (y >= gs.s) {
-      t.classList.toggle('pq' + x, true);
       t.classList.toggle('pq', true);
+      t.classList.toggle('pq'+((y>gs.s)?'1':'0'), true);
       t.style.transform = 'translateZ(' + ((x ? 2 : 120/gs.s) - x) + 'vh)';
       t.style.opacity = x?.5:1;
 
-      if (y == gs.s) x = -1.5;
-      if (y == (gs.s + 1)) x = gs.s + .5;
+      if (y == gs.s) x = -1.2;
+      if (y == (gs.s + 1)) x = gs.s + .2;
       y = (i % gs.s) * 1.1 + 2;
     }
     if (i<0) {//discard move
       x=gs.s/2;
-      y=-10;
+      y=+20;
     }
     t.style.left = (x * 100 / gs.s) + "%";
     t.style.top = (y * 100 / gs.s) + "%";
     t.style.width = t.style.height = (100 / gs.s) + "%";
-
     return t;
   }
 
@@ -120,8 +119,8 @@ function mk_brd(gs) {
   }
 
   let flat=(p)=> {
-    gecl('gamebrd', 'p1', p&&(gs.tn % 2));
-    gecl('gamebrd', 'p0', p&&(!(gs.tn % 2)));
+    gecl('game', 'p1', p&&(gs.tn % 2));
+    gecl('game', 'p0', p&&(!(gs.tn % 2)));
   };
 
   return {
