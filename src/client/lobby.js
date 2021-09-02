@@ -189,7 +189,7 @@ function start_lobby() {
     lt: "Tap here to begin",
     em: ''
   }], () => {
-    //document.documentElement.requestFullscreen();
+    document.documentElement.requestFullscreen();
     lobby.reset();
   });
 
