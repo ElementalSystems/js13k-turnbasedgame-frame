@@ -15,18 +15,18 @@ function mk_brd(gs) {
       for (i = 0; i < 5; i += 1) {
         if (b&(1<<i)) {//we have this peice
           if (i==4) { //make a tree
-            cloneM(t,'llev',4,'xx','ll').forEach((rig,i)=>{
+            cloneM(t,'llev',6,'xx','ll').forEach((rig,i)=>{
               let l=rig.querySelector('svg');
-              l.style.transform="rotateZ("+(i*90+Math.random()*30-15)+"deg) rotateX(-90deg)";
+              l.style.transform="rotateZ("+(i*60+Math.random()*20-10)+"deg) rotateX(-90deg)";
               //now add me some leaves to this branch
               cloneM(rig,'leaf',5,'p','hl').forEach((lf,i)=>{
-                lf.style.transform="translateZ("+(Math.random()*50/gs.s)+"vh) rotateZ("+(Math.random()*360)+"deg)";
+                lf.style.transform="translateZ("+(Math.random()*50/gs.s)+"vh) rotateZ("+(Math.floor(Math.random()*6)*60)+"deg) rotateX("+(-20-Math.random()*10)+"deg)";
               });
             });
           } else //add three leaves
-            cloneM(t,'leaf',3,'p','l'+i).forEach(lg=>{
+            cloneM(t,'leaf',Math.floor(2+Math.random()*5),'p','l'+i).forEach(lg=>{
               let l=lg.querySelector('svg');
-              l.style.transform="translateY("+(-Math.random()*40)+"%) rotateZ("+(Math.random()*90-45)+"deg) rotateX("+(-Math.random()*45-10)+"deg)"
+              l.style.transform="translateY("+(-Math.random()*30)+"%) rotateZ("+((Math.random()>.5)?60:-60)+"deg) rotateX("+(-Math.random()*15)+"deg)"
             });
         }
       }
@@ -64,9 +64,13 @@ function mk_brd(gs) {
   let update = () => { //set up grid
 
     gs.p.forEach((p, i) => {
+      console.log("update p"+i);
       ge_qs('p' + i, 'h2').textContent = p.n;
-      ge_qs('p' + i, 'h3').textContent = p.sc + "%";
+      ge_qs('p' + i, 'h3').textContent = p.sc?(p.sc + '%'):'';
     })
+
+    ge_gone("hlp",!(gs.p[1].hlp&&hlp[gs.tn]));
+    ge("hlp").textContent=hlp[gs.tn];
 
     gg.forEach((t, i) => {
       posTile(t,i);
@@ -79,7 +83,6 @@ function mk_brd(gs) {
       }
     });
   }
-
 
   //make the game grid
   ge('gamebrd').innerHTML='';
@@ -106,18 +109,18 @@ function mk_brd(gs) {
   let animateM=(pn,i)=>{
     let si=gs.s * (gs.s + pn); //get the starting index
     gecl('gamebrd','slow', true); //set the transitions slow
-    ae.slide();
+    //ae.slide();
     //reposition the all the tiles
     for (let c=0;c<gs.s;c+=1)
        posTile(gg[si+c],(c==0)?i:si+c-1);
     //wait for that
     setTimeout(()=>{
       //bam the tile down
-      gg[si].style.transform = 'translateZ(.5vh)';
-      ae.crack();
-      setTimeout(()=>gecl('gamebrd','slow', false),1000); //go back to fast play
-    },1000)
+      gg[si].style.transform = 'translateZ(-1vh)';
 
+      (i!=-1)?ae.crack():ae.discard();
+      setTimeout(()=>gecl('gamebrd','slow', false),800); //go back to fast play
+    },1000)
   }
 
   let flat=(p)=> {

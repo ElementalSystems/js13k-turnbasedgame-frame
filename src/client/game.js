@@ -1,14 +1,14 @@
 function startGame(gs) {
-  //ge_gone('lobby', true);
-  //ge_gone('game', false);
   document.body.classList.toggle('ms',false);
   let gsh = h_gs(gs)
   let bd = mk_brd(gs);
 
-  bd.setB("Starting Game...", 3000);
+  bd.flat(false);
+  bd.update();
+
+  bd.setB("Starting Game...", 500);
 
   let doTurn = () => {
-    bd.flat(false);
     bd.update();
     //wait to allow board to grow out
     setTimeout(() => {

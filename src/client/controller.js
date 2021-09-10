@@ -44,12 +44,35 @@ function ai_eval_mv(gs,p,i)
   let opn=pn^1; //opponent player number
   let h=h_gsc(gs); //we make a virtual board
   h.move(i);  //and make this move
+  //based on score
   let res=h.gs.p[pn].tsc*2-h.gs.p[opn].tsc;
+  //based on winning
   if (gs.winner==pn) res+=10000;
   if (gs.winner==opn) res-=10000;
-  //todo: analyse end points by colour
-  //metric distances betwwen endpoints
 
+  let eps=gs.tls.reduce((a,t,i)=>{ //analyse end points by colour and place them
+    if (gs.tls[i] != 0) return a; //already something there
+    let res=h.playOutcome(i,-1,-1);
+    if (res>=-1) a[res].push(i);//is an endpoint
+    return a;
+  },{'-1':[],'0':[],'1':[]});
+
+  let minD=(op,p)=>{ //calc minimum metric distance between i and array of pts
+    return p.reduce((a,t,i)=>{
+      let d=Math.abs((op%gs.s)-(i%gs.s))+Math.abs((op/gs.s)-(i/gs.s));
+      return Math.min(d,a);
+    },gs.s*2);
+  }
+
+  let posA=[0,0];//minimum distance to open squares
+  eps[-1].forEach(i=>{
+    posA[0]+=gs.s-minD(i,eps[0]);
+    posA[1]+=gs.s-minD(i,eps[1]);
+  });
+  //add positional advantages
+  res+=(posA[pn]-posA[opn]);
+  //we like to have oppertunity
+  res+=eps[pn].length;
   return res+Math.random();
 }
 

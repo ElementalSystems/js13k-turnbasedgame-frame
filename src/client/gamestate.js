@@ -54,6 +54,8 @@ function m_gs(s, cen, ex, bs, p0, p1) {
     at(28,[...'THE',6,10]);
     at(38,[3,12]);
     at(45,[10,9,...'UN']);
+
+
     gs.isI=true;
   } else {
     if (cen) h.add(Math.floor((gs.s * gs.s) / 2), 31, -1,-1);
@@ -85,8 +87,9 @@ function h_gs(gs) { //makes a game state handler for changing the game state
 
   let checkOwn = (i,o) => {
     if (gs.own[i] >= 0) return; //we already have a colour
-    gs.own[i]=playOutcome(i,gs.tls[i],o);
-    if (gs.own[i]>=0) { //now we have colour it might spread so check around us
+    let po=playOutcome(i,gs.tls[i],o);
+    if (po>=0) { //now we have colour it might spread so check around us
+       gs.own[i]=po;
        [0,1,2,3].forEach(d=>{
          let ni=getTD(i,d).i;
          if (ni>=0) //is a real tile

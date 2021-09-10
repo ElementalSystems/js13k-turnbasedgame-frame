@@ -76,7 +76,7 @@ function _init_lobby() {
   }
 
   geclk("bck", () => {
-    ae.crack();
+    ae.discard();
     leave_mp();
 
   });
@@ -124,6 +124,10 @@ function _init_lobby() {
     ge_gone('top', false);
     menu("Select Game Type", false, m_main, (mi, go) => {
       switch (go) {
+        case 0:
+          startGame(m_gs(5,true,[7,20,22],[3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5],
+             { n: ge('nick').value,  t: 'l'},{  n: "Teacher",t: "a", hlp:1,}));
+          break;
         case 1:
           menu("Player vs Computer: Board Type", true, m_gt, (bt, i) => {
             menu("Player vs Computer: Opponent", true, m_ais, (ai, i) => {
@@ -181,7 +185,8 @@ function start_lobby() {
   if (!lobby)
     lobby = _init_lobby();
 
-  ge('nick').value = "user" + (+(new Date()) % 10000);
+  ge('nick').value =  oneof(['Ficus','Bigno','Loni','Wist','Hede'])+oneof(['cena','spernum','viren','teria','ra'])+' '+
+                       oneof(['Tricus','Radin','Mader','Iber','Rom'])+oneof(['ika','canna','bea'])+(+(new Date()) % 100);
 
   //set up the intro board
   let ig=m_gs(7,'intro');
@@ -195,7 +200,7 @@ function start_lobby() {
     lt: "Tap here to begin",
     em: '🌱'
   }], () => {
-    document.documentElement.requestFullscreen();
+    //document.documentElement.requestFullscreen();
     ig.own.forEach((_,i)=>{
       ig.own[i]=(i<20)?0:1;
       ig.tg[i]=1;
@@ -206,9 +211,9 @@ function start_lobby() {
       setTimeout(()=>{
         ig.own.forEach((_,i)=>{
           ig.tg[i]=2;
-        })        
+        })
         ib.update();
-      },5000);
+      },500);
     },500);
 
     lobby.reset();
