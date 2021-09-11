@@ -57,6 +57,13 @@ var ae = {
             tone(.1 + Math.random(), "sawtooth").f(20, 100, 30, 20, 60, 20, 50).v(.03, 0, .02, .05, 0, .05, 0, .05);
         }, 800);
     },
+    growth: () => {
+        setTimeout(() => {
+            tone(2).f(120, 420).v(0, .3);
+            tone(2).f(220, 420).v(0, .3);
+            tone(2).f(320, 420).v(0, .3);
+        }, 1300);
+    },
     flt_in: () => {
         tone(.4).f(150, 240, 250).v(.1, .2, .3, 0);
     },
@@ -175,6 +182,7 @@ function mk_brd(gs) {
         setTimeout(() => {
             gg[si].style.transform = "translateZ(-1vh)";
             i != -1 ? ae.crack() : ae.discard();
+            if (gs.gt > 1) ae.growth();
             setTimeout(() => gecl("gamebrd", "slow", false), 800);
         }, 1e3);
     };
@@ -302,12 +310,12 @@ function startGame(gs) {
                 bd.setClk(null);
                 bd.flat(false);
                 bd.update();
-                if (i < 0) bd.setB(gs.p[pn].n + "was forced to discard (" + (gs.dCnt + 1) + ")"); else bd.setB(gs.p[pn].n + " played");
-                bd.animateM(pn, i);
+                if (i < 0) bd.setB(gs.p[pn].n + " was forced to discard (" + (gs.dCnt + 1) + ")"); else bd.setB(gs.p[pn].n + " played");
                 gsh.move(i);
-                setTimeout(doTurn, 2e3);
+                bd.animateM(pn, i);
+                setTimeout(doTurn, gs.gt == 0 ? 100 : 2e3);
             });
-        }, 3e3);
+        }, gs.gt > 1 ? 3e3 : 500);
     };
     doTurn();
 }
@@ -332,6 +340,7 @@ function m_gs(s, cen, ex, bs, p0, p1) {
         own: new Array(s * s).fill(-1),
         tg: new Array(s * s).fill(0),
         txt: new Array(s * s).fill(""),
+        gt: 0,
         p: [ {
             ...p0,
             ft: ts
@@ -467,14 +476,20 @@ function h_gs(gs) {
     let move = i => {
         let pn = gs.tn % 2;
         let ntl = gs.p[pn].ft.shift();
+        gs.gt = 0;
         if (i < 0) gs.dCnt += 1; else {
             gs.dCnt = 0;
             add(i, ntl, -1, pn);
+            gs.gt = 1;
         }
         gs.tn += 1;
         gs.tg.forEach((g, i) => {
             if (gs.own[i] < 0) return;
-            gs.tg[i] = Math.min(g + 1, gs.tls[i] & 16 ? 5 : 2);
+            let max = gs.tls[i] & 16 ? 5 : 2;
+            if (g < max) {
+                gs.tg[i] = g + 1;
+                gs.gt = 2;
+            }
         });
         calcS();
     };
@@ -594,13 +609,20 @@ function _init_lobby() {
         menu("Select Game Type", false, m_main, (mi, go) => {
             switch (go) {
               case 0:
-                startGame(m_gs(5, true, [ 7, 20, 22 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], {
+                startGame(m_gs(5, true, [ 23, 21, 26 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], {
                     n: ge("nick").value,
                     t: "l"
                 }, {
                     n: "Teacher",
                     t: "a",
-                    hlp: 1
+                    hlp: 1,
+                    pp: {
+                        s: 0,
+                        o: 0,
+                        p: -2,
+                        r: 1,
+                        d: 0
+                    }
                 }));
                 break;
 
@@ -613,7 +635,8 @@ function _init_lobby() {
                         };
                         p2 = {
                             n: ai.t,
-                            t: "a"
+                            t: "a",
+                            pp: ai.pp
                         };
                         startGameD(bt, p1, p2);
                     });
@@ -666,6 +689,7 @@ function start_lobby() {
         lt: "Tap here to begin",
         em: "🌱"
     } ], () => {
+        document.documentElement.requestFullscreen();
         ig.own.forEach((_, i) => {
             ig.own[i] = i < 20 ? 0 : 1;
             ig.tg[i] = 1;
@@ -699,7 +723,8 @@ function init() {
             r: 5
         }
     };
-    start_lobby();
+    let gs = m_gs(7, true, [ 7, 19, 19, 22 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], p1, p2);
+    startGame(gs);
 }
 
 let m_main = [ {
@@ -721,29 +746,31 @@ let m_main = [ {
 } ];
 
 let m_ais = [ {
-    t: "I.Diot",
+    t: "The Newbetrix Crawler",
     em: "💻",
     lt: "Not very good, tries nobly best to survive",
     pp: {
         s: 2,
         o: 2,
         p: 0,
-        r: 5
+        r: 5,
+        d: 0
     }
 }, {
-    t: "Defensive",
+    t: "Westrin Creeper",
     em: "💻",
-    lt: "Not very good",
+    lt: "Efficient, opportunistic, aggressive",
     pp: {
         s: 5,
-        o: 2,
-        p: 1,
-        r: 5
+        o: 5,
+        p: 2,
+        r: 1,
+        d: 0
     }
 }, {
-    t: "Geni Use",
+    t: "The Oxford Ivy",
     em: "💻",
-    lt: "Not very good",
+    lt: "Learned; deep thinking; dangerous",
     pp: {
         s: 5,
         o: 2,

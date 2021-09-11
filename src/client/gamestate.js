@@ -13,6 +13,7 @@ function m_gs(s, cen, ex, bs, p0, p1) {
     own: new Array(s * s).fill(-1), //ownership of board
     tg: new Array(s * s).fill(0), //tile growth
     txt: new Array(s * s).fill(''),
+    gt: 0, //growth time this turn
     p: [{
       ...p0,
       ft: ts
@@ -179,23 +180,29 @@ function h_gs(gs) { //makes a game state handler for changing the game state
     let ntl = gs.p[pn].ft[0]; //the current top tile
     return gs.tls.map((t, i) => canPlay(i, ntl, pn) ? i : -1).filter(i => (i >= 0));
   }
-  
+
   let move = (i) => {
     let pn = gs.tn % 2; //which player
     let ntl = gs.p[pn].ft.shift(); //use up the tile
     //okay play the board
+    gs.gt=0;
     if (i < 0)
       gs.dCnt += 1;
     else {
       gs.dCnt = 0;
       add(i, ntl, -1,pn);
+      gs.gt=1;
     }
     gs.tn += 1;
 
     //growth time
     gs.tg.forEach((g,i)=>{
       if (gs.own[i]<0) return;
-      gs.tg[i]=Math.min(g+1,(gs.tls[i]&16)?5:2); //up to 5 for a pot otherwise 1
+      let max=(gs.tls[i]&16)?5:2; //up to 5 for a pot otherwise 2
+      if (g<max) {
+        gs.tg[i]=g+1;
+        gs.gt=2;
+      }
     })
     calcS();
   }

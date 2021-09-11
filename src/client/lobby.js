@@ -1,5 +1,4 @@
 function _init_lobby() {
-
   let mp_bt = null;
 
   let _msgT = null;
@@ -125,8 +124,8 @@ function _init_lobby() {
     menu("Select Game Type", false, m_main, (mi, go) => {
       switch (go) {
         case 0:
-          startGame(m_gs(5,true,[7,20,22],[3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5],
-             { n: ge('nick').value,  t: 'l'},{  n: "Teacher",t: "a", hlp:1,}));
+          startGame(m_gs(5,true,[23,21,26],[3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5],
+             { n: ge('nick').value,  t: 'l'},{  n: "Teacher",t: "a", hlp:1, pp: { s:0, o:0, p:-2, r:1, d:0 }}));
           break;
         case 1:
           menu("Player vs Computer: Board Type", true, m_gt, (bt, i) => {
@@ -137,7 +136,8 @@ function _init_lobby() {
               };
               p2 = {
                 n: ai.t,
-                t: 'a'
+                t: 'a',
+                pp: ai.pp,
               };
               startGameD(bt, p1, p2);
             })
@@ -200,7 +200,7 @@ function start_lobby() {
     lt: "Tap here to begin",
     em: '🌱'
   }], () => {
-    //document.documentElement.requestFullscreen();
+    document.documentElement.requestFullscreen();
     ig.own.forEach((_,i)=>{
       ig.own[i]=(i<20)?0:1;
       ig.tg[i]=1;

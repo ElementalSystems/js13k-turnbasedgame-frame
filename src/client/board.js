@@ -118,6 +118,8 @@ function mk_brd(gs) {
       gg[si].style.transform = 'translateZ(-1vh)';
 
       (i!=-1)?ae.crack():ae.discard();
+      if (gs.gt>1) //also growth
+        ae.growth();
       setTimeout(()=>gecl('gamebrd','slow', false),800); //go back to fast play
     },1000)
   }

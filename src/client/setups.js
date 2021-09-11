@@ -23,21 +23,21 @@ let m_main = [
 
 let m_ais = [
   {
-    t: "I.Diot",
+    t: "The Newbetrix Crawler",
     em: "💻",
     lt:"Not very good, tries nobly best to survive",
-    pp: { s:2, o:2, p:0, r:5 }
+    pp: { s:2, o:2, p:0, r:5, d:0 }
   },
   {
-    t: "Defensive",
+    t: "Westrin Creeper",
     em: "💻",
-    lt:"Not very good",
-    pp: { s:5, o:2, p:1, r:5 }
+    lt: "Efficient, opportunistic, aggressive",
+    pp: { s:5, o:5, p:2, r:1, d:0 }
   },
   {
-    t: "Geni Use",
+    t: "The Oxford Ivy",
     em: "💻",
-    lt:"Not very good",
+    lt:"Learned; deep thinking; dangerous",
     pp: { s:5, o:2, p:1, r:5 }
   },
 ];

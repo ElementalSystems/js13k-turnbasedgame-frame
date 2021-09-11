@@ -32,14 +32,15 @@ function startGame(gs) {
         bd.flat(false);
         bd.update();
         if (i < 0)
-          bd.setB(gs.p[pn].n + "was forced to discard ("+(gs.dCnt+1)+")");
+          bd.setB(gs.p[pn].n + " was forced to discard ("+(gs.dCnt+1)+")");
         else
           bd.setB(gs.p[pn].n + " played");
-        bd.animateM(pn, i)
+
         gsh.move(i); //change the board status
-        setTimeout(doTurn, 2000);
+        bd.animateM(pn, i)
+        setTimeout(doTurn, (gs.gt==0)?100:2000);
       })
-    }, 3000);
+    }, (gs.gt>1)?3000:500);
   }
   doTurn();
 }
