@@ -740,7 +740,7 @@ function init() {
         }
     };
     let gs = m_gs(5, true, [ 7, 20, 22 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], p1, p2);
-    start_lobby();
+    startGame(gs);
 }
 
 let m_main = [ {

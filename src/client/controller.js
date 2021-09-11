@@ -23,32 +23,39 @@ function selTurn(gsh, bd, pn, p, ntl, mm) {
     lobby.waitMsg((m) => mm(m.move)); //wait for remote player to pub that turn.
   }
   if (p.t == 'a') { //for a ai player
-    setTimeout(()=>mm(bestM(gsh,p.pp)),500+Math.random()*1000);
+    setTimeout(()=>mm(bestM(gsh,p.pp,p.pp.d).m),500+Math.random()*1000);
   }
 }
 
 
-function bestM(gsh,pp)
+function bestM(gsh,pp,dep)
 {
   let lm = gsh.legalM();
   if (lm.length == 0) //forced to discard
-    return -2;
+    return {m:-2, sc: 0 };
   else {
     let moves=lm.map((i)=>({ //value the legal moves
       m: i,
-      sc: ai_eval_mv(gsh.gs,pp,i),
+      sc: ai_eval_mv(gsh.gs,pp,i,dep),
     }))
     .sort((a,b)=>b.sc-a.sc); //sort our options
-    return moves[0].m; //return the best move
+    return moves[0]; //return the best move
  }
 }
 
-function ai_eval_mv(gs,pp,i)
+function ai_eval_mv(gs,pp,i,dep)
 {
   let pn=gs.tn%2;
   let opn=pn^1; //opponent player number
-  let h=h_gsc(gs); //we make a virtual board
+  let h=h_gsc(gs); //we make a virtual copy of the board
   h.move(i);  //and make this move
+  if (dep>0) { //we don't care - we just care about the next moves
+    let om=bestM(h,pp,dep-2);
+    h.move(om.m); //make opponents best move
+    let mm=bestM(h,pp,dep-1);
+    return mm.sc; //run our next move and return score
+  }
+  //work out our heuristic at this point (no more looking into the future)
   //based on score
   let sres=h.gs.p[pn].tsc*2-h.gs.p[opn].tsc;
   //based on winning
@@ -78,7 +85,6 @@ function ai_eval_mv(gs,pp,i)
     else pres-=(oD<3)?3:1; //they are closer
   });
   let rres=Math.random();
-  console.log(i,sres,ores,pres,rres);
   return sres*pp.s+ores*pp.o+pres*pp.p+rres*pp.r;
 }
 

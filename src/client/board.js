@@ -19,12 +19,12 @@ function mk_brd(gs) {
               let l=rig.querySelector('svg');
               l.style.transform="rotateZ("+(i*60+Math.random()*20-10)+"deg) rotateX(-90deg)";
               //now add me some leaves to this branch
-              cloneM(rig,'leaf',5,'p','hl').forEach((lf,i)=>{
+              cloneM(rig,'leaf'+c,5,'p','hl').forEach((lf,i)=>{
                 lf.style.transform="translateZ("+(Math.random()*50/gs.s)+"vh) rotateZ("+(Math.floor(Math.random()*6)*60)+"deg) rotateX("+(-20-Math.random()*10)+"deg)";
               });
             });
           } else //add three leaves
-            cloneM(t,'leaf',Math.floor(2+Math.random()*5),'p','l'+i).forEach(lg=>{
+            cloneM(t,'leaf'+c,Math.floor(2+Math.random()*5),'p','l'+i).forEach(lg=>{
               let l=lg.querySelector('svg');
               l.style.transform="translateY("+(-Math.random()*30)+"%) rotateZ("+((Math.random()>.5)?60:-60)+"deg) rotateX("+(-Math.random()*15)+"deg)"
             });

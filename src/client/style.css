@@ -352,8 +352,8 @@ path.stemup {
 
 path.leaf {
   stroke-width: 3;
-  stroke-dasharray: 200;
-  stroke-dashoffset: 200;
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
   stroke: var(--linecol);
   fill: #0000;
   transform: scale3d(1, 1, 1);
