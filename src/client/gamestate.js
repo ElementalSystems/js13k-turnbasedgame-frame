@@ -54,6 +54,8 @@ function m_gs(s, cen, ex, bs, p0, p1) {
     at(28,[...'THE',6,10]);
     at(38,[3,12]);
     at(45,[10,9,...'UN']);
+    //h.add(24, 31, 0,-1);
+    //console.log(h.playOutcome(25,-1,0));
 
 
     gs.isI=true;
@@ -172,9 +174,12 @@ function h_gs(gs) { //makes a game state handler for changing the game state
     return [-2].includes(po) //if it's ours or unowned then we can play
   }
 
-  let legalM = (ntl, pn) =>
-    gs.tls.map((t, i) => canPlay(i, ntl, pn) ? i : -1).filter(i => (i >= 0));
-
+  let legalM = () =>{
+    let pn = gs.tn % 2; //which player
+    let ntl = gs.p[pn].ft[0]; //the current top tile
+    return gs.tls.map((t, i) => canPlay(i, ntl, pn) ? i : -1).filter(i => (i >= 0));
+  }
+  
   let move = (i) => {
     let pn = gs.tn % 2; //which player
     let ntl = gs.p[pn].ft.shift(); //use up the tile

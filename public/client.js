@@ -1,1 +1,814 @@
-var _audC=new(window.AudioContext||window.webkitAudioContext),_aud_MV=1;function tone(e,t){if(!_audC||!_aud_MV)return{f:function(){return this},v:function(){return this}};var n=_audC.currentTime,a=_audC.createOscillator(),o=_audC.createGain();return t&&(a.type=t),a.frequency.value=0,o.gain.value=0,a.connect(o),o.connect(_audC.destination),a.start(0),a.stop(n+e),{f:function(){if(1==arguments.length)return a.frequency.value=arguments[0],this;for(var t=0;t<arguments.length;t+=1)a.frequency.linearRampToValueAtTime(arguments[t],n+t/(arguments.length-1)*e);return this},v:function(){if(1==arguments.length)return o.gain.value=arguments[0]*_aud_MV,this;for(var t=0;t<arguments.length;t+=1)o.gain.linearRampToValueAtTime(arguments[t]*_aud_MV,n+t/(arguments.length-1)*e);return this}}}var ae={clk:()=>{tone(.2,"triangle").f(200,220,200).v(.1,.3,0),tone(.2,"triangle").f(220,200,220).v(.3,.1,0)},crack:()=>{tone(.6).f(600,100).v(.1,0),setTimeout(()=>{tone(.1,"square").f(220,120,100).v(.5,.6,.3),tone(.15,"square").f(120,80,100).v(.2,.3,.5,.3)},500),setTimeout(()=>{tone(.5+Math.random(),"sawtooth").f(80,60,30,20,100,80,50).v(.1,0,.1,.05,0,.05,0,.1),tone(.1+Math.random(),"sawtooth").f(20,100,30,20,60,20,50).v(.03,0,.02,.05,0,.05,0,.05)},800)},flt_in:()=>{tone(.4).f(150,240,250).v(.1,.2,.3,0)},flt_out:()=>{tone(.4).f(250,240,150).v(.1,.2,.3,0)},discard:()=>{tone(.33).f(420,440).v(.1,.3,.3,.3,.2,.1,0)},slide:()=>{tone(1).f(100,440).v(.1,.3,.1,.3,.1,.5,.6,0)},death:()=>{tone(2).f(100,300,100,300).v(.3,.5,.1,0),tone(2).f(200,100,200,100).v(.1,.2,.5,0)},weird:()=>{tone(3).f(120,420).v(0,.3),tone(3).f(220,420).v(0,.3),tone(3).f(320,420).v(0,.3)}};function mk_brd(l){let a=null,o=(t,e,n,a,o)=>{for(t.classList.toggle("ub",0==e),t.classList.toggle("p0",0==n),t.classList.toggle("p1",1==n),t.classList.toggle("ht",!!a),i=0;i<5;i+=1)t.classList.toggle("l"+i,e&1<<i);if(0<o&&!t.g_lev){for(i=0;i<5;i+=1)e&1<<i&&(4==i?cloneM(t,"llev",6,"xx","ll").forEach((t,e)=>{let n=t.querySelector("svg");n.style.transform="rotateZ("+(60*e+20*Math.random()-10)+"deg) rotateX(-90deg)",cloneM(t,"leaf",5,"p","hl").forEach((t,e)=>{t.style.transform="translateZ("+50*Math.random()/l.s+"vh) rotateZ("+60*Math.floor(6*Math.random())+"deg) rotateX("+(-20-10*Math.random())+"deg)"})}):cloneM(t,"leaf",Math.floor(2+5*Math.random()),"p","l"+i).forEach(t=>{let e=t.querySelector("svg");e.style.transform="translateY("+30*-Math.random()+"%) rotateZ("+(.5<Math.random()?60:-60)+"deg) rotateX("+15*-Math.random()+"deg)"}));t.g_lev=o}setTimeout(()=>{for(i=0;i<6;i+=1)t.classList.toggle("g"+i,o>=i)},10)},r=(t,e)=>{let n=e%l.s,a=Math.floor(e/l.s);return a>=l.s&&(t.classList.toggle("pq",!0),t.classList.toggle("pq"+(a>l.s?"1":"0"),!0),t.style.transform="translateZ("+((n?2:120/l.s)-n)+"vh)",t.style.opacity=n?.5:1,a==l.s&&(n=-1.2),a==l.s+1&&(n=l.s+.2),a=e%l.s*1.1+2),e<0&&(n=l.s/2,a=20),t.style.left=100*n/l.s+"%",t.style.top=100*a/l.s+"%",t.style.width=t.style.height=100/l.s+"%",t};ge("gamebrd").innerHTML="";let s=new Array(l.s*(l.s+2)).fill(0).map((t,e)=>{let n=clone("gamebrd","tile");return l.txt[e]&&(n.querySelector("span").textContent=l.txt[e]),n.style.transform="rotateY("+(4*Math.random()-2)+"deg) rotateX("+(4*Math.random()-2)+"deg) rotateZ("+(4*Math.random()-2)+"deg)",cloneM(n,["crack1","crack2"],4,"l","ex"),r(n,e),n.onclick=()=>{a&&a(e)},n}),n=null;return{setT:(t,e,n,a)=>o(s[t],e,n,a),setClk:t=>{a=t},setB:(t,e)=>{ge("gban").textContent=t,ge_gone("gban",!1),clearTimeout(n),n=setTimeout(()=>ge_gone("gban","true"),e||1e3)},flat:t=>{t?ae.flt_out():ae.flt_in(),gecl("game","isI",!!l.isI),gecl("game","p1",t&&l.tn%2),gecl("game","p0",t&&!(l.tn%2))},update:()=>{l.p.forEach((t,e)=>{console.log("update p"+e),ge_qs("p"+e,"h2").textContent=t.n,ge_qs("p"+e,"h3").textContent=t.sc?t.sc+"%":""}),ge_gone("hlp",!(l.p[1].hlp&&hlp[l.tn])),ge("hlp").textContent=hlp[l.tn],s.forEach((t,e)=>{r(t,e),e<l.s*l.s?o(t,l.tls[e],l.own[e],!1,l.tg[e]):e-l.s<l.s*l.s?o(t,l.p[0].ft[e-l.s*l.s],-1):o(t,l.p[1].ft[e-l.s*l.s-l.s],-1)})},animateM:(t,e)=>{let n=l.s*(l.s+t);gecl("gamebrd","slow",!0);for(let t=0;t<l.s;t+=1)r(s[n+t],0==t?e:n+t-1);setTimeout(()=>{s[n].style.transform="translateZ(-1vh)",-1!=e?ae.crack():ae.discard(),setTimeout(()=>gecl("gamebrd","slow",!1),800)},1e3)}}}function selTurnSoon(t,e,n,a,o,l){setTimeout(()=>selTurn(t,e,n,a,o,l),1e3)}function selTurn(e,n,t,a,o,l){let r=e.legalM(o,t);if("l"==a.t){if(0==r.length)return void l(-2);n.setClk(t=>l(t)),r.forEach(t=>n.setT(t,o,-1,!0)),n.setB("Select tile to crack",2e3),n.setClk(t=>l(t))}if("r"==a.t&&(n.setB("Waiting for "+a.n+" to play...",6e4),lobby.waitMsg(t=>l(t.move))),"a"==a.t)if(0==r.length)l(-2);else{let t=r.map(t=>({m:t,sc:ai_eval_mv(e.gs,a,t)})).sort((t,e)=>e.sc-t.sc);setTimeout(()=>l(t[0].m),1e3+1e3*Math.random())}}function ai_eval_mv(o,t,e){var n=o.tn%2,a=1^n;let l=h_gsc(o);l.move(e);let r=2*l.gs.p[n].tsc-l.gs.p[a].tsc;o.winner==n&&(r+=1e4),o.winner==a&&(r-=1e4);let s=o.tls.reduce((t,e,n)=>{if(0!=o.tls[n])return t;var a=l.playOutcome(n,-1,-1);return-1<=a&&t[a].push(n),t},{"-1":[],0:[],1:[]}),i=(a,t)=>t.reduce((t,e,n)=>{n=Math.abs(a%o.s-n%o.s)+Math.abs(a/o.s-n/o.s);return Math.min(n,t)},2*o.s),c=[0,0];return s[-1].forEach(t=>{c[0]+=o.s-i(t,s[0]),c[1]+=o.s-i(t,s[1])}),r+=c[n]-c[a],r+=s[n].length,r+Math.random()}function pubTurn(t,e,n,a,o,l){"r"==a.t&&lobby.msg({move:o})}function startGame(a){document.body.classList.toggle("ms",!1);let o=h_gs(a),l=mk_brd(a);l.flat(!1),l.update(),l.setB("Starting Game...",500);let r=()=>{l.update(),setTimeout(()=>{if(0<=a.winner)return l.setB(a.p[a.winner].n+" WON!",5e4),void setTimeout(()=>{lobby.gamedone()},5e3);l.flat(!0);let e=a.tn%2,n=a.p[e].ft[0];l.setB(a.p[e].n+"'s turn"),selTurnSoon(o,l,e,a.p[e],n,t=>{pubTurn(o,l,e,a.p[e?0:1],t,n),l.setClk(null),l.flat(!1),l.update(),t<0?l.setB(a.p[e].n+"was forced to discard ("+(a.dCnt+1)+")"):l.setB(a.p[e].n+" played"),l.animateM(e,t),o.move(t),setTimeout(r,2e3)})},3e3)};r()}function startGameD(t,e,n){startGame(m_gs(t.bs,t.bs%2,t.it,t.dt,e,n))}function m_gs(t,e,n,a,o,l){let r=t=>(x=1&(t>>1^t>>3),y=1&(t>>0^t>>2),t^(x<<1|x<<3)^(y<<0|y<<2)),s=new Array(5).fill(a).flat().sort(()=>Math.random()-.5),i={tn:0,s:t,winner:-1,tls:new Array(t*t).fill(0),own:new Array(t*t).fill(-1),tg:new Array(t*t).fill(0),txt:new Array(t*t).fill(""),p:[{...o,ft:s},{...l,ft:s.map(t=>r(t))}]},c=h_gs(i);return"intro"===e?((l=(n,t)=>{t.forEach((t,e)=>{t===+t?i.tls[e+n]=t:i.txt[e+n]=t})})(0,["A",6,10]),l(8,[3,12]),l(15,[10,9,..."PACE"]),l(21,[..."IN"]),l(28,[..."THE",6,10]),l(38,[3,12]),l(45,[10,9,..."UN"]),i.isI=!0):(e&&c.add(Math.floor(i.s*i.s/2),31,-1,-1),n.forEach((t,e)=>((t,e)=>{let n;for(;n=Math.floor(Math.random()*i.s*i.s),e&&(n=Math.floor(n/i.s)*i.s),!c.canPlace(n,t););c.add(n,t,e?0:-1,-1),c.add(i.s*i.s-1-n,r(t),e?1:-1,-1)})(t,0==e))),i}function h_gsc(t){return h_gs({...t,tls:[...t.tls],own:[...t.own],tg:[...t.tg],p:[{...t.p[0],ft:[...t.p[0].ft]},{...t.p[1],ft:[...t.p[1].ft]}]})}function h_gs(o){let l=(e,n)=>{var t;0<=o.own[e]||0<=(t=i(e,o.tls[e],n))&&(o.own[e]=t,[0,1,2,3].forEach(t=>{t=s(e,t).i;0<=t&&l(t,n)}))},r=()=>{var t=o.s*o.s*2,e=a=>o.tls.reduce((t,e,n)=>t+(o.own[n]==a?o.tg[n]:0),0),n=a=>o.tls.reduce((t,e,n)=>t+(o.own[n]==a?16&e?5:2:0),0);o.p[0].sc=Math.round(100*e(0)/t),o.p[1].sc=Math.round(100*e(1)/t),o.p[0].tsc=Math.round(100*n(0)/t),o.p[1].tsc=Math.round(100*n(1)/t),50<o.p[0].sc&&(o.winner=0),50<o.p[1].sc&&(o.winner=1),4<o.dCnt&&(o.winner=o.p[0].sc>o.p[1].sc?0:1)},a=(t,e,n,a)=>{o.tls[t]=e,-1!=(o.own[t]=n)&&(o.tg[t]=1),l(t,a),r()},s=(t,e)=>{var n=t%o.s+[0,1,0,-1][e],e=Math.floor(t/o.s)+[-1,0,1,0][e];if(n<0||n>=o.s||e<0||e>=o.s)return{t:0,o:-1,i:-1};n=e*o.s+n;return{i:n,t:o.tls[n],o:o.own[n]}},i=(a,o,t)=>{let e=[0,1,2,3].map(t=>{var e=1<<t,n=1<<(t+2)%4,t=s(a,t);return 0==t.t?-2:-1==o?t.t&n?t.o:-1:0<t.t&&!!(t.t&n)!=!!(o&e)?-999:o&e?t.o:-1});return e.includes(-999)?-999:e.includes(t)?t:e.includes(1^t)?1^t:e.includes(-1)?-1:-2},c=(t,e,n)=>0==o.tls[t]&&[-1,-2,n].includes(i(t,e,n));return{add:a,canPlay:c,legalM:(n,a)=>o.tls.map((t,e)=>c(e,n,a)?e:-1).filter(t=>0<=t),canPlace:(t,e)=>{if(0!=o.tls[t])return!1;e=i(t,e,0);return[-2].includes(e)},move:t=>{var e=o.tn%2,n=o.p[e].ft.shift();t<0?o.dCnt+=1:(o.dCnt=0,a(t,n,-1,e)),o.tn+=1,o.tg.forEach((t,e)=>{o.own[e]<0||(o.tg[e]=Math.min(t+1,16&o.tls[e]?5:2))}),r()},gs:o,playOutcome:i}}var hlp=["Welcome to the Courtyard.\n\nIt's your turn first.\nSelect a tile in the sun to crack to allow your plant to grow.","Now my turn, I'll select my tile to crack.","The goal is to grow your plant so try to crack tiles you can grow towards.\n You can see the upcoming crack patterns on the left so you can plan ahead.","I'm not really trying to win this game, so I'll just keep out of your way.","If your vine spreads into a open hole it will root and grow upwards increasing your domination","My turn, seems like you're getting the hang of this.","The goal is to take all the space in the sun. \nYour domination of the space is shown on the left.\n You win if you can dominate 50% of the space in the sun.","If niether player can play for two turns the player with the highest domination wins."];function _init_lobby(){let a=null,n=null,o=t=>{n=t},l=null;try{l=io({upgrade:!1,transports:["websocket"]}),l.on("connect",()=>{}),l.on("lobby",t=>{t=t.available.filter(t=>t.nick!=ge("nick").value).map(t=>({t:"Play with "+t.nick,lt:t.level,u:t,em:"🔗"}));menu("Player vs Player Online: Select Opponent",!0,t,(t,e)=>{l.emit("reqstart",{opponent:t.u.id})})}),l.on("disconnect",()=>{}),l.on("gm",t=>{let e=n;n=null,e&&e(t)}),l.on("playstart",t=>{var e={n:t.op,t:"r"},n={n:ge("nick").value,t:"l"};t.lead?(e=m_gs(a.bs,a.bs%2,a.it,a.dt,n,e),r(e),startGame(e)):o(t=>{t.p[0].t="r",t.p[1].t="l",startGame(t)})}),l.on("playend",()=>{gamedone()}),l.on("error",()=>{})}catch(t){}let r=t=>{l.emit("gm",t)};geclk("bck",()=>{ae.discard(),leave_mp()}),menu=(t,e,n,a)=>{ge("menu").innerHTML="",ge_qs("bot","legend").textContent=t,n.forEach((t,e)=>{let n=clone("menu","menui");qs_txt(n,"h1",t.em),qs_txt(n,"h2",t.t),qs_txt(n,"h3",t.lt),n.onclick=()=>{ae.clk(),a(t,e)}}),ge_gone("bck",!e)};let s=t=>{a=t,l.emit("el",{nick:ge("nick").value,level:t.t}),ge_no("top",!0)};return leave_mp=()=>{a&&l.emit("ll",{}),a=null,reset()},gamedone=()=>{a&&l.emit("reqend"),document.body.classList.toggle("ms",!0)},reset=()=>{document.body.classList.toggle("ms",!0),ge_gone("top",!1),menu("Select Game Type",!1,m_main,(t,e)=>{switch(e){case 0:startGame(m_gs(5,!0,[7,20,22],[3,6,12,5,11,7,5,10,14,15,15,13,3,6,9,12,7,5],{n:ge("nick").value,t:"l"},{n:"Teacher",t:"a",hlp:1}));break;case 1:menu("Player vs Computer: Board Type",!0,m_gt,(n,t)=>{menu("Player vs Computer: Opponent",!0,m_ais,(t,e)=>{p1={n:ge("nick").value,t:"l"},p2={n:t.t,t:"a"},startGameD(n,p1,p2)})});break;case 2:menu("Player vs Player Local: Board Type",!0,m_gt,(t,e)=>{p1={n:ge("nick").value,t:"l"},p2={n:"Player 2",t:"l"},startGameD(t,p1,p2)});break;case 3:menu("Player vs Player Online: Board Type",!0,m_gt,(t,e)=>{s(t)})}})},{waitMsg:o,msg:r,menu:menu,enter_mp:s,reset:reset,gamedone:gamedone}}var lobby=null;function start_lobby(){lobby=lobby||_init_lobby(),ge("nick").value=oneof(["Ficus","Bigno","Loni","Wist","Hede"])+oneof(["cena","spernum","viren","teria","ra"])+" "+oneof(["Tricus","Radin","Mader","Iber","Rom"])+oneof(["ika","canna","bea"])+ +new Date%100;let n=m_gs(7,"intro"),t=mk_brd(n);t.update(),t.flat(!1),lobby.menu("Welcome to A Space in the Sun",!1,[{t:"GROW",lt:"Tap here to begin",em:"🌱"}],()=>{n.own.forEach((t,e)=>{n.own[e]=e<20?0:1,n.tg[e]=1}),setTimeout(()=>{t.update(),t.flat(!0),setTimeout(()=>{n.own.forEach((t,e)=>{n.tg[e]=2}),t.update()},500)},500),lobby.reset()})}function init(){m_gs(7,!0,[7,19,19,22],[3,6,12,5,11,7,5,10,14,15,15,13,3,6,9,12,7,5],{n:"Player 1",t:"l"},{n:"Teacher",t:"a"});start_lobby()}let m_main=[{t:"Learn to Play",em:"🎓",lt:"Quick tutorials to learn to play"},{t:"Play vs Computer",em:"💻",lt:"Play against various AI opponents"},{t:"Player vs Local Player",em:"🎎",lt:"Play against a friend on one device"},{t:"Player vs Online Player",em:"🔗",lt:"Play against a human online"}],m_ais=[{t:"I.Diot",em:"💻",lt:"Not very good"},{t:"Defensive",em:"💻",lt:"Not very good"},{t:"Geni Use",em:"💻",lt:"Not very good"}],m_gt=[{t:"7 x 7 Beginners Board",em:"🎪",bs:7,it:[7,19],dt:[3,6,12,5,11,7,5,10,14,15,15,13,3,6,9,12,7,5],lt:"Small board for a quick game"},{t:"9 x 9 Standard Board",bs:9,em:"🥋",lt:"Standard symetric starting",it:[23,21,26,19],dt:[3,6,12,5,11,7,5,10,14,15,15,13,3,6,9,12,7,5]},{t:"6 x 6 Expert Fast Kill",bs:6,em:"🎯",lt:"Fast and tight quick game",it:[7,20,22],dt:[3,6,12,5,11,7,5,10,14,15,15,13,3,6,9,12,7,5]}],ge=t=>document.getElementById(t),gecl=(t,e,n)=>ge(t).classList.toggle(e,n),geclk=(t,e)=>ge(t).onclick=e,ge_gone=(t,e)=>gecl(t,"gone",e),ge_no=(t,e)=>gecl(t,"no",e),cloneIn=(t,e,n)=>{n=document.querySelector("#"+e).content.querySelector(n).cloneNode(!0);return t.appendChild(n),n},clone=(t,e)=>cloneIn(ge(t),e,"*"),ge_qs=(t,e)=>ge(t).querySelector(e),qs_txt=(t,e,n)=>t.querySelector(e).textContent=n,oneof=t=>Array.isArray(t)?t[Math.floor(Math.random()*t.length)]:t,cloneM=(a,o,t,l,r)=>new Array(t).fill(0).map((t,e)=>{let n=cloneIn(a,oneof(o),"*");return n.classList.toggle(l+e,!0),n.classList.toggle(r,!0),n});
+var _audC = new (window.AudioContext || window.webkitAudioContext)();
+
+var _aud_MV = 1;
+
+function tone(length, type) {
+    if (!_audC || !_aud_MV) return {
+        f: function() {
+            return this;
+        },
+        v: function() {
+            return this;
+        }
+    };
+    var current = _audC.currentTime;
+    var oscillator = _audC.createOscillator();
+    var gain = _audC.createGain();
+    if (type) oscillator.type = type;
+    oscillator.frequency.value = 0;
+    gain.gain.value = 0;
+    oscillator.connect(gain);
+    gain.connect(_audC.destination);
+    oscillator.start(0);
+    oscillator.stop(current + length);
+    return {
+        f: function() {
+            if (arguments.length == 1) {
+                oscillator.frequency.value = arguments[0];
+                return this;
+            }
+            for (var i = 0; i < arguments.length; i += 1) oscillator.frequency.linearRampToValueAtTime(arguments[i], current + i / (arguments.length - 1) * length);
+            return this;
+        },
+        v: function() {
+            if (arguments.length == 1) {
+                gain.gain.value = arguments[0] * _aud_MV;
+                return this;
+            }
+            for (var i = 0; i < arguments.length; i += 1) gain.gain.linearRampToValueAtTime(arguments[i] * _aud_MV, current + i / (arguments.length - 1) * length);
+            return this;
+        }
+    };
+}
+
+var ae = {
+    clk: () => {
+        tone(.2, "triangle").f(200, 220, 200).v(.1, .3, 0);
+        tone(.2, "triangle").f(220, 200, 220).v(.3, .1, 0);
+    },
+    crack: () => {
+        tone(.6).f(600, 100).v(.1, 0);
+        setTimeout(() => {
+            tone(.1, "square").f(220, 120, 100).v(.5, .6, .3);
+            tone(.15, "square").f(120, 80, 100).v(.2, .3, .5, .3);
+        }, 500);
+        setTimeout(() => {
+            tone(.5 + Math.random(), "sawtooth").f(80, 60, 30, 20, 100, 80, 50).v(.1, 0, .1, .05, 0, .05, 0, .1);
+            tone(.1 + Math.random(), "sawtooth").f(20, 100, 30, 20, 60, 20, 50).v(.03, 0, .02, .05, 0, .05, 0, .05);
+        }, 800);
+    },
+    flt_in: () => {
+        tone(.4).f(150, 240, 250).v(.1, .2, .3, 0);
+    },
+    flt_out: () => {
+        tone(.4).f(250, 240, 150).v(.1, .2, .3, 0);
+    },
+    discard: () => {
+        tone(.33).f(420, 440).v(.1, .3, .3, .3, .2, .1, 0);
+    },
+    slide: () => {
+        tone(1).f(100, 440).v(.1, .3, .1, .3, .1, .5, .6, 0);
+    },
+    death: () => {
+        tone(2).f(100, 300, 100, 300).v(.3, .5, .1, 0);
+        tone(2).f(200, 100, 200, 100).v(.1, .2, .5, 0);
+    },
+    weird: () => {
+        tone(3).f(120, 420).v(0, .3);
+        tone(3).f(220, 420).v(0, .3);
+        tone(3).f(320, 420).v(0, .3);
+    }
+};
+
+function mk_brd(gs) {
+    let grid_c = null;
+    let setTile = (t, b, c, ht, g) => {
+        t.classList.toggle("ub", b == 0);
+        t.classList.toggle("p0", c == 0);
+        t.classList.toggle("p1", c == 1);
+        t.classList.toggle("ht", !!ht);
+        for (i = 0; i < 5; i += 1) {
+            t.classList.toggle("l" + i, b & 1 << i);
+        }
+        if (g > 0 && !t.g_lev) {
+            for (i = 0; i < 5; i += 1) {
+                if (b & 1 << i) {
+                    if (i == 4) {
+                        cloneM(t, "llev", 6, "xx", "ll").forEach((rig, i) => {
+                            let l = rig.querySelector("svg");
+                            l.style.transform = "rotateZ(" + (i * 60 + Math.random() * 20 - 10) + "deg) rotateX(-90deg)";
+                            cloneM(rig, "leaf", 5, "p", "hl").forEach((lf, i) => {
+                                lf.style.transform = "translateZ(" + Math.random() * 50 / gs.s + "vh) rotateZ(" + Math.floor(Math.random() * 6) * 60 + "deg) rotateX(" + (-20 - Math.random() * 10) + "deg)";
+                            });
+                        });
+                    } else cloneM(t, "leaf", Math.floor(2 + Math.random() * 5), "p", "l" + i).forEach(lg => {
+                        let l = lg.querySelector("svg");
+                        l.style.transform = "translateY(" + -Math.random() * 30 + "%) rotateZ(" + (Math.random() > .5 ? 60 : -60) + "deg) rotateX(" + -Math.random() * 15 + "deg)";
+                    });
+                }
+            }
+            t.g_lev = g;
+        }
+        setTimeout(() => {
+            for (i = 0; i < 6; i += 1) t.classList.toggle("g" + i, g >= i);
+        }, 10);
+    };
+    let posTile = (t, i) => {
+        let x = i % gs.s, y = Math.floor(i / gs.s);
+        if (y >= gs.s) {
+            t.classList.toggle("pq", true);
+            t.classList.toggle("pq" + (y > gs.s ? "1" : "0"), true);
+            t.style.transform = "translateZ(" + ((x ? 2 : 120 / gs.s) - x) + "vh)";
+            t.style.opacity = x ? .5 : 1;
+            if (y == gs.s) x = -1.2;
+            if (y == gs.s + 1) x = gs.s + .2;
+            y = i % gs.s * 1.1 + 2;
+        }
+        if (i < 0) {
+            x = gs.s / 2;
+            y = +20;
+        }
+        t.style.left = x * 100 / gs.s + "%";
+        t.style.top = y * 100 / gs.s + "%";
+        t.style.width = t.style.height = 100 / gs.s + "%";
+        return t;
+    };
+    let update = () => {
+        gs.p.forEach((p, i) => {
+            ge_qs("p" + i, "h2").textContent = p.n;
+            ge_qs("p" + i, "h3").textContent = p.sc ? p.sc + "%" : "";
+        });
+        ge_gone("hlp", !(gs.p[1].hlp && hlp[gs.tn]));
+        ge("hlp").textContent = hlp[gs.tn];
+        gg.forEach((t, i) => {
+            posTile(t, i);
+            if (i < gs.s * gs.s) setTile(t, gs.tls[i], gs.own[i], false, gs.tg[i]); else if (i - gs.s < gs.s * gs.s) {
+                setTile(t, gs.p[0].ft[i - gs.s * gs.s], -1);
+            } else {
+                setTile(t, gs.p[1].ft[i - gs.s * gs.s - gs.s], -1);
+            }
+        });
+    };
+    ge("gamebrd").innerHTML = "";
+    let gg = new Array(gs.s * (gs.s + 2)).fill(0).map((d, i) => {
+        let t = clone("gamebrd", "tile");
+        if (gs.txt[i]) t.querySelector("span").textContent = gs.txt[i];
+        t.style.transform = "rotateY(" + (Math.random() * 4 - 2) + "deg) rotateX(" + (Math.random() * 4 - 2) + "deg) rotateZ(" + (Math.random() * 4 - 2) + "deg)";
+        cloneM(t, [ "crack1", "crack2" ], 4, "l", "ex");
+        posTile(t, i);
+        t.onclick = () => {
+            if (grid_c) grid_c(i);
+        };
+        return t;
+    });
+    let _sb = null;
+    let setB = (t, tm) => {
+        ge("gban").textContent = t;
+        ge_gone("gban", false);
+        clearTimeout(_sb);
+        _sb = setTimeout(() => ge_gone("gban", "true"), tm ? tm : 1e3);
+    };
+    let animateM = (pn, i) => {
+        let si = gs.s * (gs.s + pn);
+        gecl("gamebrd", "slow", true);
+        for (let c = 0; c < gs.s; c += 1) posTile(gg[si + c], c == 0 ? i : si + c - 1);
+        setTimeout(() => {
+            gg[si].style.transform = "translateZ(-1vh)";
+            i != -1 ? ae.crack() : ae.discard();
+            setTimeout(() => gecl("gamebrd", "slow", false), 800);
+        }, 1e3);
+    };
+    let flat = p => {
+        p ? ae.flt_out() : ae.flt_in();
+        gecl("game", "isI", !!gs.isI);
+        gecl("game", "p1", p && gs.tn % 2);
+        gecl("game", "p0", p && !(gs.tn % 2));
+    };
+    return {
+        setT: (i, t, o, ht) => setTile(gg[i], t, o, ht),
+        setClk: f => {
+            grid_c = f;
+        },
+        setB: setB,
+        flat: flat,
+        update: update,
+        animateM: animateM
+    };
+}
+
+function selTurnSoon(gsh, bd, pn, p, ntl, mm) {
+    setTimeout(() => selTurn(gsh, bd, pn, p, ntl, mm), 1e3);
+}
+
+function selTurn(gsh, bd, pn, p, ntl, mm) {
+    if (p.t == "l") {
+        let lm = gsh.legalM();
+        if (lm.length == 0) {
+            mm(-2);
+            return;
+        }
+        bd.setClk(i => mm(i));
+        lm.forEach(i => bd.setT(i, ntl, -1, true));
+        bd.setB("Select tile to crack", 2e3);
+        bd.setClk(i => mm(i));
+    }
+    if (p.t == "r") {
+        bd.setB("Waiting for " + p.n + " to play...", 6e4);
+        lobby.waitMsg(m => mm(m.move));
+    }
+    if (p.t == "a") {
+        setTimeout(() => mm(bestM(gsh, p.pp)), 500 + Math.random() * 1e3);
+    }
+}
+
+function bestM(gsh, pp) {
+    let lm = gsh.legalM();
+    if (lm.length == 0) return -2; else {
+        let moves = lm.map(i => ({
+            m: i,
+            sc: ai_eval_mv(gsh.gs, pp, i)
+        })).sort((a, b) => b.sc - a.sc);
+        return moves[0].m;
+    }
+}
+
+function ai_eval_mv(gs, pp, i) {
+    let pn = gs.tn % 2;
+    let opn = pn ^ 1;
+    let h = h_gsc(gs);
+    h.move(i);
+    let sres = h.gs.p[pn].tsc * 2 - h.gs.p[opn].tsc;
+    if (h.gs.winner == pn) sres += 1e4;
+    if (h.gs.winner == opn) sres -= 1e4;
+    let eps = h.gs.tls.reduce((a, t, i) => {
+        if (h.gs.tls[i] != 0) return a;
+        let res = h.playOutcome(i, -1, 0);
+        if (res >= -1) a[res].push(i);
+        return a;
+    }, {
+        "-1": [],
+        0: [],
+        1: []
+    });
+    let minD = (op, p) => {
+        return p.reduce((a, t, i) => {
+            let d = Math.abs(op % gs.s - i % gs.s) + Math.abs(op / gs.s - i / gs.s);
+            return Math.min(d, a);
+        }, gs.s * 2);
+    };
+    let ores = eps[pn].length < 2 ? -10 : eps[pn].length * 2;
+    let pres = 0;
+    eps[-1].forEach(i => {
+        let mD = minD(i, eps[pn]);
+        let oD = minD(i, eps[opn]);
+        if (mD <= oD) pres += mD < 3 ? 3 : 1; else pres -= oD < 3 ? 3 : 1;
+    });
+    let rres = Math.random();
+    console.log(i, sres, ores, pres, rres);
+    return sres * pp.s + ores * pp.o + pres * pp.p + rres * pp.r;
+}
+
+function pubTurn(gsh, bd, pn, op, i, t) {
+    if (op.t == "r") {
+        lobby.msg({
+            move: i
+        });
+    }
+}
+
+function startGame(gs) {
+    document.body.classList.toggle("ms", false);
+    let gsh = h_gs(gs);
+    let bd = mk_brd(gs);
+    bd.flat(false);
+    bd.update();
+    bd.setB("Starting Game...", 500);
+    let doTurn = () => {
+        bd.update();
+        setTimeout(() => {
+            if (gs.winner >= 0) {
+                bd.setB(gs.p[gs.winner].n + " WON!", 5e4);
+                setTimeout(() => {
+                    lobby.gamedone();
+                }, 5e3);
+                return;
+            }
+            bd.flat(true);
+            let pn = gs.tn % 2;
+            let ntl = gs.p[pn].ft[0];
+            bd.setB(gs.p[pn].n + "'s turn");
+            selTurnSoon(gsh, bd, pn, gs.p[pn], ntl, i => {
+                pubTurn(gsh, bd, pn, gs.p[pn ? 0 : 1], i, ntl);
+                bd.setClk(null);
+                bd.flat(false);
+                bd.update();
+                if (i < 0) bd.setB(gs.p[pn].n + "was forced to discard (" + (gs.dCnt + 1) + ")"); else bd.setB(gs.p[pn].n + " played");
+                bd.animateM(pn, i);
+                gsh.move(i);
+                setTimeout(doTurn, 2e3);
+            });
+        }, 3e3);
+    };
+    doTurn();
+}
+
+function startGameD(bt, p1, p2) {
+    let gs = m_gs(bt.bs, bt.bs % 2, bt.it, bt.dt, p1, p2);
+    startGame(gs);
+}
+
+function m_gs(s, cen, ex, bs, p0, p1) {
+    let flip = n => {
+        x = (n >> 1 ^ n >> 3) & 1;
+        y = (n >> 0 ^ n >> 2) & 1;
+        return n ^ (x << 1 | x << 3) ^ (y << 0 | y << 2);
+    };
+    let ts = new Array(5).fill(bs).flat().sort(() => Math.random() - .5);
+    let gs = {
+        tn: 0,
+        s: s,
+        winner: -1,
+        tls: new Array(s * s).fill(0),
+        own: new Array(s * s).fill(-1),
+        tg: new Array(s * s).fill(0),
+        txt: new Array(s * s).fill(""),
+        p: [ {
+            ...p0,
+            ft: ts
+        }, {
+            ...p1,
+            ft: ts.map(n => flip(n))
+        } ]
+    };
+    let h = h_gs(gs);
+    let add_r = (t, start) => {
+        let i;
+        do {
+            i = Math.floor(Math.random() * gs.s * gs.s);
+            if (start) i = Math.floor(i / gs.s) * gs.s;
+        } while (!h.canPlace(i, t));
+        h.add(i, t, start ? 0 : -1, -1);
+        h.add(gs.s * gs.s - 1 - i, flip(t), start ? 1 : -1, -1);
+    };
+    if (cen === "intro") {
+        let at = (si, s) => {
+            s.forEach((c, i) => {
+                if (c === +c) {
+                    gs.tls[i + si] = c;
+                } else gs.txt[i + si] = c;
+            });
+        };
+        at(0, [ "A", 6, 10 ]);
+        at(8, [ 3, 12 ]);
+        at(15, [ 10, 9, ..."PACE" ]);
+        at(21, [ ..."IN" ]);
+        at(28, [ ..."THE", 6, 10 ]);
+        at(38, [ 3, 12 ]);
+        at(45, [ 10, 9, ..."UN" ]);
+        gs.isI = true;
+    } else {
+        if (cen) h.add(Math.floor(gs.s * gs.s / 2), 31, -1, -1);
+        ex.forEach((t, ind) => add_r(t, ind == 0));
+    }
+    return gs;
+}
+
+function h_gsc(gso) {
+    return h_gs({
+        ...gso,
+        tls: [ ...gso.tls ],
+        own: [ ...gso.own ],
+        tg: [ ...gso.tg ],
+        p: [ {
+            ...gso.p[0],
+            ft: [ ...gso.p[0].ft ]
+        }, {
+            ...gso.p[1],
+            ft: [ ...gso.p[1].ft ]
+        } ]
+    });
+}
+
+function h_gs(gs) {
+    let checkOwn = (i, o) => {
+        if (gs.own[i] >= 0) return;
+        let po = playOutcome(i, gs.tls[i], o);
+        if (po >= 0) {
+            gs.own[i] = po;
+            [ 0, 1, 2, 3 ].forEach(d => {
+                let ni = getTD(i, d).i;
+                if (ni >= 0) checkOwn(ni, o);
+            });
+        }
+    };
+    let calcS = () => {
+        let tot = gs.s * gs.s * 2;
+        let calc_sc = p => gs.tls.reduce((a, t, i) => a + (gs.own[i] == p ? gs.tg[i] : 0), 0);
+        let calc_tsc = p => gs.tls.reduce((a, t, i) => a + (gs.own[i] == p ? t & 16 ? 5 : 2 : 0), 0);
+        gs.p[0].sc = Math.round(calc_sc(0) * 100 / tot);
+        gs.p[1].sc = Math.round(calc_sc(1) * 100 / tot);
+        gs.p[0].tsc = Math.round(calc_tsc(0) * 100 / tot);
+        gs.p[1].tsc = Math.round(calc_tsc(1) * 100 / tot);
+        if (gs.p[0].sc > 50) gs.winner = 0;
+        if (gs.p[1].sc > 50) gs.winner = 1;
+        if (gs.dCnt > 4) gs.winner = gs.p[0].sc > gs.p[1].sc ? 0 : 1;
+    };
+    let add = (i, t, o, op) => {
+        gs.tls[i] = t;
+        gs.own[i] = o;
+        if (o != -1) gs.tg[i] = 1;
+        checkOwn(i, op);
+        calcS();
+    };
+    let getTD = (i, d) => {
+        let xp = i % gs.s + [ 0, 1, 0, -1 ][d], yp = Math.floor(i / gs.s) + [ -1, 0, 1, 0 ][d];
+        if (xp < 0 || xp >= gs.s || yp < 0 || yp >= gs.s) return {
+            t: 0,
+            o: -1,
+            i: -1
+        };
+        let ni = yp * gs.s + xp;
+        return {
+            i: ni,
+            t: gs.tls[ni],
+            o: gs.own[ni]
+        };
+    };
+    let playOutcome = (i, t, o) => {
+        let r = [ 0, 1, 2, 3 ].map(d => {
+            let db = 1 << d, rdb = 1 << (d + 2) % 4, tt = getTD(i, d);
+            if (tt.t == 0) return -2;
+            if (t == -1) {
+                return tt.t & rdb ? tt.o : -1;
+            }
+            if (tt.t > 0 && !!(tt.t & rdb) != !!(t & db)) return -999;
+            return t & db ? tt.o : -1;
+        });
+        if (r.includes(-999)) return -999;
+        if (r.includes(o)) return o;
+        if (r.includes(o ^ 1)) return o ^ 1;
+        if (r.includes(-1)) return -1;
+        return -2;
+    };
+    let canPlay = (i, t, o) => {
+        if (gs.tls[i] != 0) return false;
+        return [ -1, -2, o ].includes(playOutcome(i, t, o));
+    };
+    let canPlace = (i, t) => {
+        if (gs.tls[i] != 0) return false;
+        let po = playOutcome(i, t, 0);
+        return [ -2 ].includes(po);
+    };
+    let legalM = () => {
+        let pn = gs.tn % 2;
+        let ntl = gs.p[pn].ft[0];
+        return gs.tls.map((t, i) => canPlay(i, ntl, pn) ? i : -1).filter(i => i >= 0);
+    };
+    let move = i => {
+        let pn = gs.tn % 2;
+        let ntl = gs.p[pn].ft.shift();
+        if (i < 0) gs.dCnt += 1; else {
+            gs.dCnt = 0;
+            add(i, ntl, -1, pn);
+        }
+        gs.tn += 1;
+        gs.tg.forEach((g, i) => {
+            if (gs.own[i] < 0) return;
+            gs.tg[i] = Math.min(g + 1, gs.tls[i] & 16 ? 5 : 2);
+        });
+        calcS();
+    };
+    return {
+        add: add,
+        canPlay: canPlay,
+        legalM: legalM,
+        canPlace: canPlace,
+        move: move,
+        gs: gs,
+        playOutcome: playOutcome
+    };
+}
+
+var hlp = [ "Welcome to the Courtyard.\n\nIt's your turn first.\nSelect a tile in the sun to crack to allow your plant to grow.", "Now my turn, I'll select my tile to crack.", "The goal is to grow your plant so try to crack tiles you can grow towards.\n You can see the upcoming crack patterns on the left so you can plan ahead.", "I'm not really trying to win this game, so I'll just keep out of your way.", "If your vine spreads into a open hole it will root and grow upwards increasing your domination", "My turn, seems like you're getting the hang of this.", "The goal is to take all the space in the sun. \nYour domination of the space is shown on the left.\n You win if you can dominate 50% of the space in the sun.", "If niether player can play for two turns the player with the highest domination wins." ];
+
+function _init_lobby() {
+    let mp_bt = null;
+    let _msgT = null;
+    let waitMsg = f => {
+        _msgT = f;
+    };
+    let socket = null;
+    try {
+        socket = io({
+            upgrade: false,
+            transports: [ "websocket" ]
+        });
+        socket.on("connect", () => {});
+        socket.on("lobby", data => {
+            let op_m = data.available.filter(u => u.nick != ge("nick").value).map(u => ({
+                t: "Play with " + u.nick,
+                lt: u.level,
+                u: u,
+                em: "🔗"
+            }));
+            menu("Player vs Player Online: Select Opponent", true, op_m, (op, i) => {
+                socket.emit("reqstart", {
+                    opponent: op.u.id
+                });
+            });
+        });
+        socket.on("disconnect", () => {});
+        socket.on("gm", msg => {
+            let t = _msgT;
+            _msgT = null;
+            if (t) t(msg);
+        });
+        socket.on("playstart", d => {
+            let op = {
+                n: d.op,
+                t: "r"
+            };
+            let tp = {
+                n: ge("nick").value,
+                t: "l"
+            };
+            if (d.lead) {
+                let gs = m_gs(mp_bt.bs, mp_bt.bs % 2, mp_bt.it, mp_bt.dt, tp, op);
+                msg(gs);
+                startGame(gs);
+            } else {
+                waitMsg(gs => {
+                    gs.p[0].t = "r";
+                    gs.p[1].t = "l";
+                    startGame(gs);
+                });
+            }
+        });
+        socket.on("playend", () => {
+            gamedone();
+        });
+        socket.on("error", () => {});
+    } catch (e) {}
+    let msg = m => {
+        socket.emit("gm", m);
+    };
+    geclk("bck", () => {
+        ae.discard();
+        leave_mp();
+    });
+    menu = (title, showB, ops, act) => {
+        ge("menu").innerHTML = "";
+        ge_qs("bot", "legend").textContent = title;
+        ops.forEach((op, i) => {
+            let b = clone("menu", "menui");
+            qs_txt(b, "h1", op.em);
+            qs_txt(b, "h2", op.t);
+            qs_txt(b, "h3", op.lt);
+            b.onclick = () => {
+                ae.clk();
+                act(op, i);
+            };
+        });
+        ge_gone("bck", !showB);
+    };
+    let enter_mp = bt => {
+        mp_bt = bt;
+        socket.emit("el", {
+            nick: ge("nick").value,
+            level: bt.t
+        });
+        ge_no("top", true);
+    };
+    leave_mp = () => {
+        if (mp_bt) socket.emit("ll", {});
+        mp_bt = null;
+        reset();
+    };
+    gamedone = () => {
+        if (mp_bt) socket.emit("reqend");
+        document.body.classList.toggle("ms", true);
+    };
+    reset = () => {
+        document.body.classList.toggle("ms", true);
+        ge_gone("top", false);
+        menu("Select Game Type", false, m_main, (mi, go) => {
+            switch (go) {
+              case 0:
+                startGame(m_gs(5, true, [ 7, 20, 22 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], {
+                    n: ge("nick").value,
+                    t: "l"
+                }, {
+                    n: "Teacher",
+                    t: "a",
+                    hlp: 1
+                }));
+                break;
+
+              case 1:
+                menu("Player vs Computer: Board Type", true, m_gt, (bt, i) => {
+                    menu("Player vs Computer: Opponent", true, m_ais, (ai, i) => {
+                        p1 = {
+                            n: ge("nick").value,
+                            t: "l"
+                        };
+                        p2 = {
+                            n: ai.t,
+                            t: "a"
+                        };
+                        startGameD(bt, p1, p2);
+                    });
+                });
+                break;
+
+              case 2:
+                menu("Player vs Player Local: Board Type", true, m_gt, (bt, i) => {
+                    p1 = {
+                        n: ge("nick").value,
+                        t: "l"
+                    };
+                    p2 = {
+                        n: "Player 2",
+                        t: "l"
+                    };
+                    startGameD(bt, p1, p2);
+                });
+                break;
+
+              case 3:
+                menu("Player vs Player Online: Board Type", true, m_gt, (bt, i) => {
+                    enter_mp(bt);
+                });
+                break;
+            }
+        });
+    };
+    return {
+        waitMsg: waitMsg,
+        msg: msg,
+        menu: menu,
+        enter_mp: enter_mp,
+        reset: reset,
+        gamedone: gamedone
+    };
+}
+
+var lobby = null;
+
+function start_lobby() {
+    if (!lobby) lobby = _init_lobby();
+    ge("nick").value = oneof([ "Ficus", "Bigno", "Loni", "Wist", "Hede" ]) + oneof([ "cena", "spernum", "viren", "teria", "ra" ]) + " " + oneof([ "Tricus", "Radin", "Mader", "Iber", "Rom" ]) + oneof([ "ika", "canna", "bea" ]) + +new Date() % 100;
+    let ig = m_gs(7, "intro");
+    let ib = mk_brd(ig);
+    ib.update();
+    ib.flat(false);
+    lobby.menu("Welcome to A Space in the Sun", false, [ {
+        t: "GROW",
+        lt: "Tap here to begin",
+        em: "🌱"
+    } ], () => {
+        ig.own.forEach((_, i) => {
+            ig.own[i] = i < 20 ? 0 : 1;
+            ig.tg[i] = 1;
+        });
+        setTimeout(() => {
+            ib.update();
+            ib.flat(true);
+            setTimeout(() => {
+                ig.own.forEach((_, i) => {
+                    ig.tg[i] = 2;
+                });
+                ib.update();
+            }, 500);
+        }, 500);
+        lobby.reset();
+    });
+}
+
+function init() {
+    let p1 = {
+        n: "Player 1",
+        t: "l"
+    };
+    let p2 = {
+        n: "Clever?",
+        t: "a",
+        pp: {
+            s: 5,
+            o: 2,
+            p: 1,
+            r: 5
+        }
+    };
+    start_lobby();
+}
+
+let m_main = [ {
+    t: "Learn to Play",
+    em: "🎓",
+    lt: "Quick tutorials to learn to play"
+}, {
+    t: "Play vs Computer",
+    em: "💻",
+    lt: "Play against various AI opponents"
+}, {
+    t: "Player vs Local Player",
+    em: "🎎",
+    lt: "Play against a friend on one device"
+}, {
+    t: "Player vs Online Player",
+    em: "🔗",
+    lt: "Play against a human online"
+} ];
+
+let m_ais = [ {
+    t: "I.Diot",
+    em: "💻",
+    lt: "Not very good, tries nobly best to survive",
+    pp: {
+        s: 2,
+        o: 2,
+        p: 0,
+        r: 5
+    }
+}, {
+    t: "Defensive",
+    em: "💻",
+    lt: "Not very good",
+    pp: {
+        s: 5,
+        o: 2,
+        p: 1,
+        r: 5
+    }
+}, {
+    t: "Geni Use",
+    em: "💻",
+    lt: "Not very good",
+    pp: {
+        s: 5,
+        o: 2,
+        p: 1,
+        r: 5
+    }
+} ];
+
+let m_gt = [ {
+    t: "7 x 7 Beginners Board",
+    em: "🎪",
+    bs: 7,
+    it: [ 7, 19 ],
+    dt: [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ],
+    lt: "Small board for a quick game"
+}, {
+    t: "9 x 9 Standard Board",
+    bs: 9,
+    em: "🥋",
+    lt: "Standard symetric starting",
+    it: [ 23, 21, 26, 19 ],
+    dt: [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ]
+}, {
+    t: "6 x 6 Expert Fast Kill",
+    bs: 6,
+    em: "🎯",
+    lt: "Fast and tight quick game",
+    it: [ 7, 20, 22 ],
+    dt: [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ]
+} ];
+
+let ge = id => document.getElementById(id);
+
+let gecl = (id, c, s) => ge(id).classList.toggle(c, s);
+
+let geclk = (id, f) => ge(id).onclick = f;
+
+let ge_gone = (id, s) => gecl(id, "gone", s);
+
+let ge_no = (id, s) => gecl(id, "no", s);
+
+let cloneIn = (par, tempid, q) => {
+    let clone = document.querySelector("#" + tempid).content.querySelector(q).cloneNode(true);
+    par.appendChild(clone);
+    return clone;
+};
+
+let clone = (pid, tempid) => {
+    return cloneIn(ge(pid), tempid, "*");
+};
+
+let ge_qs = (id, qs) => ge(id).querySelector(qs);
+
+let qs_txt = (e, qs, txt) => e.querySelector(qs).textContent = txt;
+
+let oneof = x => {
+    if (!Array.isArray(x)) return x;
+    return x[Math.floor(Math.random() * x.length)];
+};
+
+let cloneM = (par, tempid, n, cp, cls) => {
+    return new Array(n).fill(0).map((_, i) => {
+        let nn = cloneIn(par, oneof(tempid), "*");
+        nn.classList.toggle(cp + i, true);
+        nn.classList.toggle(cls, true);
+        return nn;
+    });
+};

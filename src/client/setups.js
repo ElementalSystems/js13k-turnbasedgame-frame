@@ -25,17 +25,20 @@ let m_ais = [
   {
     t: "I.Diot",
     em: "💻",
-    lt:"Not very good"
+    lt:"Not very good, tries nobly best to survive",
+    pp: { s:2, o:2, p:0, r:5 }
   },
   {
     t: "Defensive",
     em: "💻",
-    lt:"Not very good"
+    lt:"Not very good",
+    pp: { s:5, o:2, p:1, r:5 }
   },
   {
     t: "Geni Use",
     em: "💻",
-    lt:"Not very good"
+    lt:"Not very good",
+    pp: { s:5, o:2, p:1, r:5 }
   },
 ];
 

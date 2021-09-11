@@ -64,7 +64,6 @@ function mk_brd(gs) {
   let update = () => { //set up grid
 
     gs.p.forEach((p, i) => {
-      console.log("update p"+i);
       ge_qs('p' + i, 'h2').textContent = p.n;
       ge_qs('p' + i, 'h3').textContent = p.sc?(p.sc + '%'):'';
     })
