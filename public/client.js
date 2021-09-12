@@ -697,7 +697,8 @@ function start_lobby() {
         lt: "Tap here to begin",
         em: "🌱"
     } ], () => {
-        document.documentElement.requestFullscreen();
+        if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+        if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
         ig.own.forEach((_, i) => {
             ig.own[i] = i < 20 ? 0 : 1;
             ig.tg[i] = 1;
