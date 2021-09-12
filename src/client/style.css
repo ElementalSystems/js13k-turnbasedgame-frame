@@ -1,6 +1,6 @@
 body {
+  background: #000;
   margin: 0;
-  perspective: 100vh;
   font-family: sans-serif;
   overflow: hidden;
   --p0c0: #0F0;
@@ -133,7 +133,7 @@ body {
   border: none;
   position: absolute;
   pointer-events: none;
-  transform-style: preserve-3d;
+  transform-style: inherit;
   overflow: visible;
 }
 
@@ -143,9 +143,11 @@ body {
   display: block;
   color: #3368;
   text-shadow: 1px 1px 0px rgba(255, 255, 255, .6), -1px -1px 0px rgba(0, 0, 0, .8);
+  pointer-events: none;
+  transform-style: preserve-3d;
 }
 
-.tile svg, .tile div.rig {
+.tile svg, .tile div.rig, .tile div.rigs {
   transform-style: preserve-3d;
   overflow: visible;
   position: absolute;
@@ -153,6 +155,8 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
+  pointer-events: none;
+
 }
 
 #game.isI .tile.pq {
@@ -211,11 +215,11 @@ body {
 
 @keyframes growin {
   from {
-    transform: scaleY(0.01);
+    stroke-dashoffset: 150;
   }
 
   to {
-    transform: scaleY(1);
+    stroke-dashoffset: 0;
   }
 }
 
@@ -311,8 +315,11 @@ path.stem {
   stroke-width: 5;
   stroke: var(--stemcol);
   display: none;
-  animation: growin 1s ease-in .6s forwards;
-  transform: scaleY(0.01);
+  fill:none;
+  stroke-dasharray: 150;
+  stroke-dashoffset: 150;
+  animation: growin .8s ease-in .8s forwards;
+
 }
 
 path.stemup {
@@ -351,25 +358,36 @@ path.stemup {
 }
 
 path.leaf {
-  stroke-width: 3;
+  stroke-width: 2;
   stroke-dasharray: 300;
   stroke-dashoffset: 300;
   stroke: var(--linecol);
   fill: #0000;
-  transform: scale3d(1, 1, 1);
-  transition: transform 4s, fill .5s linear 2s, stroke-dashoffset 1s ease-in 1s;
+  transition:  fill .5s linear 2s, stroke-dashoffset 1s ease-in 1s;
 }
 
 .tile.g1 path.leaf {
-  stroke-width: 2;
   stroke-dashoffset: 0;
   fill: var(--bkcol);
-  transform: scale3d(.7, .8, .8);
 }
 
 .tile.g2 path.leaf {
+  stroke-width: 3;
+}
+
+.tile .rigs svg {
+  transition: transform 4s;
+  transform: scale3d(.5, .5, .5);
+}
+
+.tile.g1 .rigs svg {
+  transform: scale3d(.7, .5, .5);
+}
+
+.tile.g1.g2 .rigs svg {
   transform: scale3d(.8, 1, 1);
 }
+
 
 .tile .l1 {
   transform: rotateZ(90deg);
@@ -405,10 +423,13 @@ path.leaf {
 
 #game {
   display: flex;
+  perspective: 100vh;
+  transform-style: preserve-3d;
+  pointer-events: none;
   width: 100vw;
   height: 100vh;
   margin: 0;
-  background: #000;
+
   z-index: 100;
   transition: width 1s;
 }
@@ -478,9 +499,10 @@ path.leaf {
   margin: 0 auto;
   position: relative;
   transform-origin: 50% 100%;
-  transform-style: preserve-3d;
+  transform-style: inherit;
   transform: rotateX(40deg) translateZ(10rem);
   transition: transform .5s;
+
 }
 
 .p0 #gamebrd {

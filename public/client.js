@@ -109,7 +109,7 @@ function mk_brd(gs) {
                             });
                         });
                     } else cloneM(t, "leaf" + c, Math.floor(2 + Math.random() * 5), "p", "l" + i).forEach(lg => {
-                        let l = lg.querySelector("svg");
+                        let l = lg.querySelector(".rigs");
                         l.style.transform = "translateY(" + -Math.random() * 30 + "%) rotateZ(" + (Math.random() > .5 ? 60 : -60) + "deg) rotateX(" + -Math.random() * 15 + "deg)";
                     });
                 }
@@ -719,7 +719,7 @@ function start_lobby() {
 function init() {
     let p1 = {
         n: "mewbe",
-        t: "a",
+        t: "l",
         pp: {
             s: 4,
             o: 1,
@@ -739,7 +739,7 @@ function init() {
             d: 1
         }
     };
-    let gs = m_gs(5, true, [ 7, 20, 22 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], p1, p2);
+    let gs = m_gs(7, true, [ 31, 19, 19, 22 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], p1, p2);
     start_lobby();
 }
 
