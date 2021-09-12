@@ -285,7 +285,7 @@ body {
 
 .tile>svg.always {
   display: block;
-  transform: translateZ(-1px);
+  transform: translateZ(-5px);
 }
 
 path.tbg {
