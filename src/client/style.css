@@ -3,22 +3,18 @@ body {
   margin: 0;
   font-family: sans-serif;
   overflow: hidden;
-  --p0c0: #0F0;
+  --p0c0: #0C0;
   --p0c1: #0F00;
-  --p0c2: #0A0;
+  --p0c2: #090;
   --p0c3: #060;
-  --p0c4: #0A08;
+  --p0c4: #0908;
 
   --p1c0: #A20;
   --p1c1: #96A0;
   --p1c2: #960;
   --p1c3: #F40;
   --p1c4: #050A;
-  /*--p1c0: #F0F;
-  --p1c1: #F0F0;
-  --p1c2: #A0A;
-  --p1c3: #606;
-  --p1c4: #A0A8;*/
+
 }
 
 #lobby {

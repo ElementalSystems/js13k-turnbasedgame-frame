@@ -67,7 +67,7 @@ let m_gt = [ //corners 3 6 9 12 //three 7 11 13 14 //fw 15 //st 5 10
     t: "7 x 7 Sparse Board",
     em: '🏛️',
     bs: 7,
-    it: [20,31],
+    it: [7,31],
     dt: [3, 6, 9, 5,10,12, 7, 11, 13, 14, 15, 7, 7,11, 14 , 15, 15, 15,7,13,5,10],
     lt: 'A Harsh open space for a gritty fight.',
   },

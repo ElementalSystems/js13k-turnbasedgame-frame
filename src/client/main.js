@@ -1,7 +1,6 @@
 /*
   Still to do:
 
-  decide on colours :(
   look at js13k submission rules
 
   4. put in backdrop layer and background
