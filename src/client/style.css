@@ -8,18 +8,24 @@ body {
   --p0c2: #0A0;
   --p0c3: #060;
   --p0c4: #0A08;
-  --p1c0: #F0F;
+
+  --p1c0: #A20;
+  --p1c1: #96A0;
+  --p1c2: #960;
+  --p1c3: #F40;
+  --p1c4: #050A;
+  /*--p1c0: #F0F;
   --p1c1: #F0F0;
   --p1c2: #A0A;
   --p1c3: #606;
-  --p1c4: #A0A8;
+  --p1c4: #A0A8;*/
 }
 
 #lobby {
   position: absolute;
   top: 0rem;
   right: -45rem;
-  width: 30rem;
+  width: 18rem;
   height: 100vh;
   background: #CCC;
   z-index: 200;
@@ -53,9 +59,9 @@ body {
 }
 
 #nick {
-  font-size: 2rem;
-  padding: .5rem;
-  width: 26rem;
+  font-size: 1rem;
+  padding: .25rem;
+  width: 15rem;
   color: #558;
   text-shadow: 0px 1px 0px rgba(255, 255, 255, .3), 0px -1px 0px rgba(0, 0, 0, .7);
   background-color: #CCD;
@@ -69,9 +75,17 @@ body {
   border: inset 1px #EEF;
 }
 
+#top {
+
+}
+
+legend {
+  font-size: .5rem;
+}
+
 #bot {
   position: relative;
-  height: 70vh;
+  height: 60vh;
   overflow: auto;
   padding-top: 2rem;
 }
@@ -94,7 +108,7 @@ body {
 }
 
 .menui h1 {
-  font-size: 3rem;
+  font-size: 2rem;
   position: absolute;
   top: 0;
   left: 0;
@@ -102,18 +116,18 @@ body {
 }
 
 .menui h2 {
-  font-size: 1.8rem;
+  font-size: 1rem;
   text-align: center;
   padding: 0;
-  margin: .5rem 0 0 5rem;
+  margin: .5rem 0 0 2.5rem;
   color: #000;
   text-shadow: 0px 1px 0px rgba(255, 255, 255, .3), 0px -1px 0px rgba(0, 0, 0, .7);
 }
 
 .menui h3 {
-  font-size: 1rem;
+  font-size: .8rem;
   text-align: center;
-  margin: .1rem 0 .2rem 5rem;
+  margin: .1rem 0 .2rem 2.5rem;
   color: #444;
   text-shadow: 0px 1px 0px rgba(255, 255, 255, .3), 0px -1px 0px rgba(0, 0, 0, .7);
 }
@@ -285,7 +299,7 @@ body {
 
 .tile>svg.always {
   display: block;
-  transform: translateZ(-8px);
+  transform: translateZ(-10px);
 }
 
 path.tbg {
@@ -435,16 +449,16 @@ path.leaf {
 }
 
 .ms #game {
-  width: calc(100vw - 30rem);
+  width: calc(100vw - 18rem);
 }
 
 .ps {
   height: 100vh;
-  width: 20rem;
+  width: calc(50vw - 50vh);
   background: linear-gradient(to right, var(--p0c2), var(--p0c1));
   position: absolute;
   left: 0;
-  padding: 1rem;
+  padding: .25rem;
   --pc: var(--p0c3);
   --pcb: var(--p0c0);
 }
@@ -454,18 +468,22 @@ path.leaf {
 }
 
 .ps h2 {
+  padding:0;
+  font-size: 1.5rem;
   color: #FFF;
+  margin: 0;
 }
 
 .ps h3 {
-  font-size: 200%;
-  width: 3em;
-  padding: 1em 0;
+  margin: 1rem 0 0 0 ;
+  font-size: 1.5rem;
+  width: 2em;
+  padding: .5em 0;
   border-radius: 50% 50%;
   display: inline-block;
   text-align: center;
   background: var(--pc);
-  color: var(--pcb);
+  color: #FFF;
   border: var(--pcb) 1px solid;
   font-family: monospace;
 }
@@ -480,14 +498,17 @@ path.leaf {
 }
 
 #hlp {
+  z-index: 199;
   position: absolute;
-  width: 10rem;
-  padding: 1rem;
+  width: 15rem;
+  padding: .5rem;
+  font-size:1rem;
   border-radius: .5rem;
-  background: var(--p1c3);
+  background: #000A;
+  border: #FFF solid 1px;
   color: #FFF;
   right: 0;
-  top: 60vh;
+  top: 50vh;
   bottom: 0;
   white-space: pre-wrap;
 }
@@ -520,12 +541,12 @@ path.leaf {
   position: absolute;
   display: block;
   top: 0rem;
-  margin: 0 calc(50% - 51vh);
-  padding: 1rem;
-  font-size: 2rem;
+  margin: 0 calc(50% - 50vh);
+  padding: .5rem;
+  font-size: 1rem;
   text-align: center;
   z-index: 101;
-  width: 98vh;
+  width: 100vh;
   pointer-events: none;
   opacity: 1;
   background: linear-gradient(to left, #CCC0, #CCC, #CCC, #CCC0);

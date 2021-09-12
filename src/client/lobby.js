@@ -21,6 +21,12 @@ function _init_lobby() {
           u,
           em: '🔗',
         }));
+      console.log(op_m);
+      if (!op_m.length) op_m=[{
+        t: 'No opponent',
+        lt: 'There are no others players in the lobby right now.',
+        em: '😞',
+      }]
       menu("Player vs Player Online: Select Opponent", true, op_m, (op, i) => {
         socket.emit("reqstart", {
           opponent: op.u.id
@@ -202,7 +208,7 @@ function start_lobby() {
   }], () => {
     if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
     if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
-
+    ib.setB("",1);
     ig.own.forEach((_,i)=>{
       ig.own[i]=(i<20)?0:1;
       ig.tg[i]=1;

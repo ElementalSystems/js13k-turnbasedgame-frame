@@ -110,7 +110,7 @@ function mk_brd(gs) {
                         });
                     } else cloneM(t, "leaf" + c, Math.floor(2 + Math.random() * 5), "p", "l" + i).forEach(lg => {
                         let l = lg.querySelector(".rigs");
-                        l.style.transform = "translateY(" + -Math.random() * 30 + "%) rotateZ(" + (Math.random() > .5 ? 60 : -60) + "deg) rotateX(" + -Math.random() * 15 + "deg)";
+                        l.style.transform = "translateZ(5px) translateY(" + -Math.random() * 30 + "%) rotateZ(" + (Math.random() > .5 ? 60 : -60) + "deg) rotateX(" + -Math.random() * 15 + "deg)";
                     });
                 }
             }
@@ -534,6 +534,12 @@ function _init_lobby() {
                 u: u,
                 em: "🔗"
             }));
+            console.log(op_m);
+            if (!op_m.length) op_m = [ {
+                t: "No opponent",
+                lt: "There are no others players in the lobby right now.",
+                em: "😞"
+            } ];
             menu("Player vs Player Online: Select Opponent", true, op_m, (op, i) => {
                 socket.emit("reqstart", {
                     opponent: op.u.id
@@ -699,6 +705,7 @@ function start_lobby() {
     } ], () => {
         if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
         if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
+        ib.setB("", 1);
         ig.own.forEach((_, i) => {
             ig.own[i] = i < 20 ? 0 : 1;
             ig.tg[i] = 1;
@@ -740,7 +747,6 @@ function init() {
             d: 1
         }
     };
-    let gs = m_gs(7, true, [ 31, 19, 19, 22 ], [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ], p1, p2);
     start_lobby();
 }
 
@@ -824,22 +830,29 @@ let m_gt = [ {
     em: "🎪",
     bs: 7,
     it: [ 7, 19, 31 ],
-    dt: [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ],
-    lt: "Standard board for a quick game"
+    dt: [ 3, 6, 9, 5, 10, 12, 7, 11, 13, 14, 15, 7, 7, 11, 14, 15, 15, 15 ],
+    lt: "Standard courtyard for a quick game"
 }, {
-    t: "9 x 9 Large Board",
-    bs: 9,
-    em: "🥋",
-    lt: "A large sparse courtyard",
-    it: [ 23, 21, 26, 19 ],
-    dt: [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ]
+    t: "7 x 7 Sparse Board",
+    em: "🏛️",
+    bs: 7,
+    it: [ 20, 31 ],
+    dt: [ 3, 6, 9, 5, 10, 12, 7, 11, 13, 14, 15, 7, 7, 11, 14, 15, 15, 15, 7, 13, 5, 10 ],
+    lt: "A Harsh open space for a gritty fight."
 }, {
     t: "6 x 6 Expert Fast Kill",
     bs: 6,
     em: "🎯",
     lt: "Fast and tight quick game",
-    it: [ 7, 20, 22 ],
-    dt: [ 3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12, 7, 5 ]
+    it: [ 7, 21, 26, 31 ],
+    dt: [ 3, 6, 9, 5, 10, 12, 7, 11, 13, 14, 15, 7, 15, 15 ]
+}, {
+    t: "9 x 9 Large Board",
+    bs: 9,
+    em: "🥋",
+    lt: "A large busy courtyard for a longer game",
+    it: [ 23, 21, 21, 26, 26, 19, 31, 31 ],
+    dt: [ 3, 6, 9, 5, 10, 12, 7, 11, 13, 14, 15, 7, 7, 11, 14, 15, 15, 15, 7, 15, 5, 5, 10, 10 ]
 } ];
 
 let ge = id => document.getElementById(id);

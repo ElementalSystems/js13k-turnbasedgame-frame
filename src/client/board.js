@@ -26,7 +26,7 @@ function mk_brd(gs) {
           } else //add three leaves
             cloneM(t,'leaf'+c,Math.floor(2+Math.random()*5),'p','l'+i).forEach(lg=>{
               let l=lg.querySelector('.rigs');
-              l.style.transform="translateY("+(-Math.random()*30)+"%) rotateZ("+((Math.random()>.5)?60:-60)+"deg) rotateX("+(-Math.random()*15)+"deg)"
+              l.style.transform="translateZ(5px) translateY("+(-Math.random()*30)+"%) rotateZ("+((Math.random()>.5)?60:-60)+"deg) rotateX("+(-Math.random()*15)+"deg)"
             });
         }
       }

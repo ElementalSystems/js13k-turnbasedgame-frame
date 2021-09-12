@@ -54,29 +54,38 @@ let m_ais = [
   },
 ];
 
-let m_gt = [
+let m_gt = [ //corners 3 6 9 12 //three 7 11 13 14 //fw 15 //st 5 10
   {
     t: "7 x 7 Standard Board",
     em: '🎪',
     bs: 7,
     it: [7,19,31],
-    dt: [3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5],
-    lt: 'Standard board for a quick game',
+    dt: [3, 6, 9, 5,10,12, 7, 11, 13, 14, 15, 7, 7,11, 14 , 15, 15, 15],
+    lt: 'Standard courtyard for a quick game',
   },
   {
-    t: "9 x 9 Large Board",
-    bs: 9,
-    em: '🥋',
-    lt: 'A large sparse courtyard',
-    it: [23,21,26,19],
-    dt: [3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5],
+    t: "7 x 7 Sparse Board",
+    em: '🏛️',
+    bs: 7,
+    it: [20,31],
+    dt: [3, 6, 9, 5,10,12, 7, 11, 13, 14, 15, 7, 7,11, 14 , 15, 15, 15,7,13,5,10],
+    lt: 'A Harsh open space for a gritty fight.',
   },
   {
     t: "6 x 6 Expert Fast Kill",
     bs: 6,
     em: '🎯',
     lt: 'Fast and tight quick game',
-    it: [7,20,22],
-    dt: [3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5]
+    it: [7,21,26,31],
+    dt: [3, 6, 9,5,10, 12, 7, 11, 13, 14, 15, 7, 15, 15],
   },
+  {
+    t: "9 x 9 Large Board",
+    bs: 9,
+    em: '🥋',
+    lt: 'A large busy courtyard for a longer game',
+    it: [23,21,21,26,26,19,31,31],
+    dt: [3, 6, 9,5,10, 12, 7, 11, 13, 14, 15, 7, 7,11, 14 , 15, 15, 15,7,15,5,5,10,10],
+  },
+
 ];
