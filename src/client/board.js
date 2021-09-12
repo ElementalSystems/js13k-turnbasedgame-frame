@@ -88,7 +88,7 @@ function mk_brd(gs) {
   let gg = new Array(gs.s * (gs.s + 2)).fill(0).map((d, i) => {
     let t = clone('gamebrd', 'tile');
     if (gs.txt[i]) t.querySelector('span').textContent=gs.txt[i];
-    t.style.transform="rotateY("+(Math.random()*4-2)+"deg) rotateX("+(Math.random()*4-2)+"deg) rotateZ("+(Math.random()*4-2)+"deg)";
+    t.style.transform="rotateY("+(Math.random()*2-1)+"deg) rotateX("+(Math.random()*2-1)+"deg) rotateZ("+(Math.random()*4-2)+"deg)";
     cloneM(t,['crack1','crack2'],4,'l','ex')
     posTile(t, i);
     t.onclick = () => {
