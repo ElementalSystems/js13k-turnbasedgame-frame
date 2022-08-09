@@ -18,6 +18,7 @@ async function startGame(p1,p2) {
     bd.update();     
     if (gs.tn>5) {
       bd.setB("game over");
+      await wait(2000);
       return false;
     }    
     return true;
