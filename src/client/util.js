@@ -14,17 +14,9 @@ let clone=(pid,tempid)=>{
 let ge_qs=(id,qs)=>ge(id).querySelector(qs);
 let qs_txt=(e,qs,txt)=>e.querySelector(qs).textContent=txt;
 
-
 let oneof=(x)=>{ //gets one of an array at random or return the input
   if (!Array.isArray(x)) return x;
   return x[Math.floor(Math.random()*x.length)]
 }
-let cloneM=(par,tempid,n,cp,cls)=>//clone multiple nodes
-{
-  return (new Array(n)).fill(0).map((_,i)=>{
-    let nn=cloneIn(par,oneof(tempid),'*');
-    nn.classList.toggle(cp+i,true);
-    nn.classList.toggle(cls,true);
-    return nn;
-  });
-}
+
+let wait=(ms)=> new Promise(resolve => setTimeout(resolve, ms));

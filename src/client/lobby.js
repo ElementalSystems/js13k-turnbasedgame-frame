@@ -17,11 +17,10 @@ function _init_lobby() {
       let op_m = data.available.filter(u => (u.nick != ge('nick').value))
         .map(u => ({
           t: 'Play with ' + u.nick,
-          lt: u.level,
+          lt: 'Play online with this player',
           u,
           em: '🔗',
         }));
-      console.log(op_m);
       if (!op_m.length) op_m=[{
         t: 'No opponent',
         lt: 'There are no others players in the lobby right now.',
@@ -53,17 +52,10 @@ function _init_lobby() {
       }
 
       if (d.lead) { //if d.lead init your game
-        let gs = m_gs(mp_bt.bs, mp_bt.bs % 2, mp_bt.it, mp_bt.dt, tp, op);
-        msg(gs);
-        startGame(gs);
+        startGame(tp,op);
       } else {
-        waitMsg(gs => { //we expect to get a game state first
-          gs.p[0].t = 'r'; //overwrite the players in reverse and play our side
-          gs.p[1].t = 'l';
-          startGame(gs)
-        })
+        startGame(op,tp);        
       }
-
     });
 
     socket.on("playend", () => {
@@ -81,9 +73,9 @@ function _init_lobby() {
   }
 
   geclk("bck", () => {
-    ae.discard();
+    ae.clk();
     leave_mp();
-
+    reset();
   });
 
 
@@ -101,21 +93,27 @@ function _init_lobby() {
       };
     })
     ge_gone('bck', !showB)
-
   }
 
-  let enter_mp = (bt) => {
-    mp_bt = bt;
+  display = (title, text) => {
+    ge('menu').innerHTML = '';
+    ge_qs('bot', 'legend').textContent = title;    
+    let b = clone('menu', 'displayi');
+    qs_txt(b, 'pre', text);          
+    ge_gone('bck', false);
+  }
+
+
+  let enter_mp = () => {    
     socket.emit("el", {
       nick: ge('nick').value,
-      level: bt.t,
     });
     ge_no('top', true);
   }
 
   leave_mp = () => {
-    if (mp_bt) socket.emit("ll", {})
-    mp_bt = null;
+    socket.emit("ll", {})
+    ge_no('top', false);
     reset();
   }
 
@@ -125,17 +123,16 @@ function _init_lobby() {
   }
 
   reset = () => {
-    document.body.classList.toggle('ms', true);
-    ge_gone('top', false);
+    ge_gone("lobby",false);
+    ge_gone("game",true);
+  
     menu("Select Game Type", false, m_main, (mi, go) => {
       switch (go) {
         case 0:
-          startGame(m_gs(5,true,[23,21,26],[3, 6, 12, 5, 11, 7, 5, 10, 14, 15, 15, 13, 3, 6, 9, 12,7,5],
-             { n: ge('nick').value,  t: 'l'},{  n: "Teacher",t: "a", hlp:1, pp: { s:0, o:0, p:-2, r:1, d:0 }}));
+          display("Instructions","Instructions go here");
           break;
         case 1:
-          menu("Player vs Computer: Board Type", true, m_gt, (bt, i) => {
-            menu("Player vs Computer: Opponent", true, m_ais, (ai, i) => {
+          menu("Player vs Computer: Opponent", true, m_ais, (ai, i) => {
               p1 = {
                 n: ge('nick').value,
                 t: 'l'
@@ -145,27 +142,22 @@ function _init_lobby() {
                 t: 'a',
                 pp: ai.pp,
               };
-              startGameD(bt, p1, p2);
-            })
-          })
+              startGame(p1, p2);
+            })          
           break;
         case 2:
-          menu("Player vs Player Local: Board Type", true, m_gt, (bt, i) => {
-            p1 = {
-              n: ge('nick').value,
-              t: 'l'
-            };
-            p2 = {
-              n: 'Player 2',
-              t: 'l'
-            };
-            startGameD(bt, p1, p2);
-          })
+          p1 = {
+            n: ge('nick').value,
+            t: 'l'
+          };
+          p2 = {
+            n: 'Player 2',
+            t: 'l'
+          };
+          startGame(p1, p2);
           break;
         case 3:
-          menu("Player vs Player Online: Board Type", true, m_gt, (bt, i) => {
-            enter_mp(bt);
-          })
+          enter_mp();
           break;
       }
     })
@@ -190,42 +182,8 @@ var lobby = null;
 function start_lobby() {
   if (!lobby)
     lobby = _init_lobby();
-
-  ge('nick').value =  oneof(['Ficus','Bigno','Loni','Wist','Hede'])+oneof(['cena','spernum','viren','teria','ra'])+' '+
-                       oneof(['Tricus','Radin','Mader','Iber','Rom'])+oneof(['ika','canna','bea'])+(+(new Date()) % 100);
-
+  ge('nick').value =  oneof(['Fried','Crazy','Wise','Smart','Clever'])+' '+
+     oneof(['Alex','Storm','Petra','Zena'])+' '+(+(new Date()) % 100);
   //set up the intro board
-  let ig=m_gs(7,'intro');
-  let ib=mk_brd(ig);
-  ib.update();
-  ib.flat(false);
-
-
-  lobby.menu("Welcome to A Space in the Sun", false, [{
-    t: "GROW",
-    lt: "Tap here to begin",
-    em: '🌱'
-  }], () => {
-    if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-    if (document.documentElement.webkitRequestFullscreen) document.documentElement.webkitRequestFullscreen();
-    ib.setB("",1);
-    ig.own.forEach((_,i)=>{
-      ig.own[i]=(i<20)?0:1;
-      ig.tg[i]=1;
-    })
-    setTimeout(()=>{
-      ib.update();
-      ib.flat(true);
-      setTimeout(()=>{
-        ig.own.forEach((_,i)=>{
-          ig.tg[i]=2;
-        })
-        ib.update();
-      },500);
-    },500);
-
-    lobby.reset();
-  });
-
-
+  lobby.reset();
 }
